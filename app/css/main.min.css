@@ -19,6 +19,10 @@ input,
 textarea {
   font-size: inherit; }
 
+.parent {
+  font-size: 18px;
+  font-family: "OpenSans", sans-serif; }
+
 button {
   border: none;
   background: none; }

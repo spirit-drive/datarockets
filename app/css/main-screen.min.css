@@ -166,5 +166,6 @@ body {
   line-height: 1.2;
   font-family: "OpenSans-Light", sans-serif;
   background: none; }
-ont-family: "OpenSans-Light", sans-serif;
-  background: none; }
+
+.parent {
+  font-family: "OpenSans", sans-serif; }
