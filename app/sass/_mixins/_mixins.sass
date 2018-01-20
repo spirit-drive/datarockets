@@ -1,0 +1,61 @@
+@mixin box-shadow
+  margin-bottom: 2rem
+  box-shadow: -1.12rem 0.65rem 2rem rgba(0,0,0,.4)
+
+@mixin light-shadow
+  text-shadow: 0.4em 0.4em 1.2em rgba(255,255,255,1), -0.4em 0.4em 1.2em rgba(255,255,255,1), 0.4em -0.4em 1.2em rgba(255,255,255,1), -0.4em -0.4em 1.2em rgba(255,255,255,1)
+
+@mixin absolute-center
+  position: absolute
+  left: 50%
+  transform: translateX(-50%)
+
+@mixin underline-decoration
+  $time-link: .2s
+  display: block
+  position: absolute
+  content: ""
+  height: 1px
+  width: 0
+  bottom: -2px
+  background: $main-color
+  transition: all $time-link
+
+@mixin underline-on-hover
+  $percent: 50%
+  position: relative
+  &:hover
+    &:before
+      width: $percent
+      left: 0
+    &:after
+      width: $percent
+  &:active
+    color: $main-color
+    &:before
+      background: $main-color
+    &:after
+      background: $main-color
+  &:before
+    left: $percent + .1
+    +underline-decoration
+  &:after
+    left: $percent - .1
+    +underline-decoration
+
+@mixin button-call-hover
+  .button-call
+    border-width: 3px
+    padding: 9px
+    border-color: $accent-color
+@mixin button-call-active
+  .button-call
+    transition: all 0s
+    background: $accent-color
+
+@mixin icon-call-active
+  .icon-call
+    transition: all 0s
+    background-position-y: -26px
+
+
