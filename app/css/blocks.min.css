@@ -3,9 +3,11 @@ button {
   background: none; }
 
 .line {
+  width: 100%;
+  text-align: left;
   cursor: pointer;
   transition: all .1s; }
-  .line:hover {
+  .line:hover, .line:focus {
     background: #dadada; }
-  .line:active > * {
+  .line:active {
     color: #fff; }

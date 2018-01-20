@@ -24,11 +24,13 @@ button {
   background: none; }
 
 .line {
+  width: 100%;
+  text-align: left;
   cursor: pointer;
   -webkit-transition: all .1s;
   -o-transition: all .1s;
   transition: all .1s; }
-  .line:hover {
+  .line:hover, .line:focus {
     background: #dadada; }
-  .line:active > * {
+  .line:active {
     color: #fff; }

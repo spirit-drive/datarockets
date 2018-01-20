@@ -164,10 +164,12 @@ function changeTree(tree,name,newName,parent){
 changeTree(tree,'class','class!!!','OOP');
 
 function createHtml(tree) {
-    let res = `<li><div class="line"><button>${tree.name}</button></div>`;
+    let skills = !!tree.skills;
+    let cls = (skills) ? ' class="parent"' : '';
+    let res = `<li${cls}><button class="line">${tree.name}</button>`;
 
     // Если есть skills, то создаем обертку ul и бежим по внутренностям
-    if (tree.skills) {
+    if (skills) {
         res += '<ul>';
         for (let i = 0; tree.skills[i]; ++i) {
             res += createHtml(tree.skills[i]);
