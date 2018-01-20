@@ -1,0 +1,11 @@
+button {
+  border: none;
+  background: none; }
+
+.line {
+  cursor: pointer;
+  transition: all .1s; }
+  .line:hover {
+    background: #dadada; }
+  .line:active > * {
+    color: #fff; }

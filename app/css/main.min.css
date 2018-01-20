@@ -19,3 +19,16 @@ input,
 textarea {
   font-size: inherit; }
 
+button {
+  border: none;
+  background: none; }
+
+.line {
+  cursor: pointer;
+  -webkit-transition: all .1s;
+  -o-transition: all .1s;
+  transition: all .1s; }
+  .line:hover {
+    background: #dadada; }
+  .line:active > * {
+    color: #fff; }
