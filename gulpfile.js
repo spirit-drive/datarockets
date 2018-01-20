@@ -25,15 +25,17 @@ var gulp           = require('gulp'),
 gulp.task('remove-js', function() {
     return del.sync([
         'app/js/libs.js',
-        'app/js/mylibs.js'
+        'app/js/mylibs.js',
+        'app/js/blocks.js',
     ]);
 });
 
 //
 gulp.task('js',['js-libs','js-mylibs','js-blocks'], function() {
     return gulp.src([
-        '!app/js/scripts.min.js',
-        'app/js/*.js',
+        'app/js/libs.js',
+        'app/js/mylibs.js',
+        'app/js/blocks.js',
     ])
         .pipe(concat('scripts.min.js'))
         // .pipe(uglify()) // Минимизировать весь js (на выбор)
