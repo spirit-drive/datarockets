@@ -138,6 +138,14 @@ let tree = {
         }
     ]
 };
+let tree1 = {
+    name: '1213',
+    skills: [
+        {
+            name: '1243'
+        }
+    ]
+};
 
 let renderTreeObj = {
     number: 0,
@@ -148,13 +156,18 @@ let renderTreeObj = {
         ++this.number;
 
         // Если в локальной истории что-то есть, то берем данные оттуда
-        let localStorageTree = localStorage.getItem("tree");
+        let localStorageTree = localStorage.getItem("tree" + this.number);
         // this.tree = (localStorageTree) ? JSON.parse(localStorageTree) : obj;
         this.tree = obj;
 
         // Присваиваем контейнер и рендерим элементы по объекту
         this.container = document.getElementById(idContainer);
         this.render();
+    },
+
+    endOperations: function () {
+        this.render();
+        localStorage.setItem("tree" + this.number,JSON.stringify(this.tree, '', 2));
     },
 
     // Произодит операции над объектом древовидной структуры. Добавляет, Редактирует, Удаляет
@@ -165,7 +178,43 @@ let renderTreeObj = {
         // parent - родитель, дабы исключить изменение параметра в другой ветке. Не слишком надежное решение, можно усовершенствовать, но в рамках учебного задания, достаточно
 
         // Останавливаем функцию, если нет какого-то из данных
-        if (!tree || !name || !parent){ return; }
+        if (!tree || !name){ return; }
+
+        if (tree.name === name){
+
+            switch (func){
+
+                // Редактирование
+                case 'edit':
+                    tree.name = newName;
+                    break;
+
+                // Добавление подстроки
+                case 'add':
+                    let skills = tree.skills;
+                    if (skills){
+                        skills.push({name: newName});
+                    } else {
+                        tree.skills = [{name: newName}];
+                    }
+                    break;
+
+                // Удаление
+                case 'del':
+                case 'delete':
+                    tree.name = 'Новая ветка';
+                    delete tree.skills;
+                    break;
+
+                // По умолчанию добавление
+                default:
+                    tree.name = newName;
+            }
+            // Рендерим элементы, сохраняем в локальную историю, завершем функцию
+            this.endOperations();
+            return;
+
+        }
 
         // Бежим по всем элементам списка
         for (let i = 0; tree.skills[i]; ++i){
@@ -204,8 +253,7 @@ let renderTreeObj = {
                 }
 
                 // Рендерим элементы, сохраняем в локальную историю, завершем функцию
-                this.render();
-                localStorage.setItem("tree",JSON.stringify(this.tree, '', 2));
+                this.endOperations();
                 return;
             }
 
@@ -216,20 +264,13 @@ let renderTreeObj = {
         }
     },
 
-    // Создает елементы HTML и инициализирует переменные
-    render: function () {
-
-        this.container.innerHTML = `<ul id="tree_1" class="tree">${this.getHtml(this.tree)}</ul>${this.blockChanges.render()}`;
-        this.init();
-    },
-
     // Элемент из списка (линия)
     line: {
         elem: '',
 
         // Убирает/показывает под список, если он есть
         hideShowSublist: function (currentElem) {
-            $(currentElem).parent().children('.list').slideToggle();
+            $(currentElem).parent().children('.list_' + renderTreeObj.number).slideToggle();
         },
 
         // Инициализирует переменные и события
@@ -237,7 +278,7 @@ let renderTreeObj = {
             let pendingClick = 0;
             let line = this;
 
-            this.elem = $('.line');
+            this.elem = $('.line_' + renderTreeObj.number);
 
             // При клике
             this.elem.click(function (e) {
@@ -303,8 +344,6 @@ let renderTreeObj = {
                     }
                 });
             });
-
-
         },
     },
 
@@ -321,16 +360,6 @@ let renderTreeObj = {
         currentElem: '',
 
         focus: false,
-
-        // Создает Html блока
-        render: function () {
-            return `<div id="change_1" class="change">
-                        <input id="change__field_1" class="change__field" value=""/>
-                        <button id="change__save_1" class="change__save">Сохранить</button>
-                        <button id="change__add_1" class="change__add">Добавить подстроку</button>
-                        <button id="change__del_1" class="change__del">Удалить</button>
-                        </div>`;
-        },
 
         // Закрывает блок
         close: function () {
@@ -380,6 +409,7 @@ let renderTreeObj = {
         // Сохранить значение пункта
         save: function () {
             let tree = renderTreeObj.tree;
+            console.log(tree);
             let elemText = renderTreeObj.getNames(this.currentElem).elem;
             let parentText = renderTreeObj.getNames(this.currentElem).parent;
             let inputValue = this.input.val();
@@ -387,7 +417,7 @@ let renderTreeObj = {
             // Только если значение инпута отличается от первоначального текста
             if (inputValue !== elemText){
                 renderTreeObj.operations('edit',tree,elemText,parentText,inputValue);
-                renderTreeObj.blockChanges.focusLine('.line__text',inputValue);
+                renderTreeObj.blockChanges.focusLine('.line__text_' + renderTreeObj.number,inputValue);
             }
 
             // Закрываем окно в любом случае
@@ -406,7 +436,7 @@ let renderTreeObj = {
             function add() {
                 renderTreeObj.operations('add',tree,elemText,parentText,inputValue);
                 renderTreeObj.blockChanges.close();
-                renderTreeObj.blockChanges.focusLine('.parent .line__text',inputValue);
+                renderTreeObj.blockChanges.focusLine('.parent .line__text_' + renderTreeObj.number,inputValue);
             }
 
             // Если сработала функция добавления, то текст такой же как элемента, вероятно функция вызвана по ошибке
@@ -434,9 +464,9 @@ let renderTreeObj = {
 
             // Принимает текст текущего элемента, возвращает текст предыдущего элемента
             function prevText(text) {
-                let parentElem = $(`.line__text:contains(${text})`).parent().parent();
-                let prevText = parentElem.prev().children().children('.line__text').text();
-                return (prevText) ? prevText : parentElem.parent().parent().children().children('.line__text').eq(0).text();
+                let parentElem = $(`.line__text_${renderTreeObj.number}:contains(${text})`).parent().parent();
+                let prevText = parentElem.prev().children().children('.line__text_' + renderTreeObj.number).text();
+                return (prevText) ? prevText : parentElem.parent().parent().children().children('.line__text_' + renderTreeObj.number).eq(0).text();
             }
 
             if (confirm(`Удалить "${elemText}"?`)){
@@ -451,7 +481,7 @@ let renderTreeObj = {
                     // Переменные для определения фокусировки. Надо до рендеринга их определить
                     let text = prevText(elemText);
                     renderTreeObj.operations('del',tree,elemText,parentText);
-                    renderTreeObj.blockChanges.focusLine('.line__text',text);
+                    renderTreeObj.blockChanges.focusLine('.line__text_' + renderTreeObj.number,text);
 
                 }, 600);
             }
@@ -468,11 +498,11 @@ let renderTreeObj = {
 
             let blockChanges = this;
 
-            this.elem = $('#change_1');
-            this.input = $('#change__field_1');
-            this.saveButton = $('#change__save_1');
-            this.addButton = $('#change__add_1');
-            this.delButton = $('#change__del_1');
+            this.elem = $('#change_' + renderTreeObj.number);
+            this.input = $('#change__field_' + renderTreeObj.number);
+            this.saveButton = $('#change__save_' + renderTreeObj.number);
+            this.addButton = $('#change__add_' + renderTreeObj.number);
+            this.delButton = $('#change__del_' + renderTreeObj.number);
 
             // Функции нажатия на кнопки
             this.saveButton.click(function () {
@@ -510,6 +540,42 @@ let renderTreeObj = {
 
         },
 
+        // Создает Html блока
+        render: function () {
+            return `<div id="change_${renderTreeObj.number}" class="change">
+                        <input id="change__field_${renderTreeObj.number}" class="change__field" value=""/>
+                        <button id="change__save_${renderTreeObj.number}" class="change__save">Сохранить</button>
+                        <button id="change__add_${renderTreeObj.number}" class="change__add">Добавить подстроку</button>
+                        <button id="change__del_${renderTreeObj.number}" class="change__del">Удалить</button>
+                        </div>`;
+        },
+
+    },
+
+    // Принимает выбранный элемент, возвращает текст родителя и самого элемента
+    getNames: function (currentElem) {
+        return {
+            parent: $(currentElem).parent().parent().parent().children('.line_'+ this.number).text(),
+            elem: $(currentElem).text(),
+        };
+    },
+
+    // Принимает объект древовидной структуры, возвращает код HTML
+    getHtml: function (objTree) {
+        // Проверяем один раз на наличие скилов и результат используем
+        let skills = !!objTree.skills;
+        let res = `<li><button class="line_${this.number} line${(skills) ? ' parent' : ''}"><span class="line__text_${this.number}">${objTree.name}</span></button>`;
+
+        // Если есть skills, то создаем обертку ul и бежим по внутренностям
+        if (skills) {
+            res += `<ul class="list_${this.number}">`;
+            for (let i = 0; objTree.skills[i]; ++i) {
+                res += this.getHtml(objTree.skills[i]);
+            }
+            res += '</ul>';
+        }
+        res += '</li>';
+        return res;
     },
 
     // Инициализируем переменные и события
@@ -521,34 +587,16 @@ let renderTreeObj = {
 
     },
 
-    // Принимает выбранный элемент, возвращает текст родителя и самого элемента
-    getNames: function (currentElem) {
-        return {
-            parent: $(currentElem).parent().parent().parent().children('.line').text(),
-            elem: $(currentElem).text(),
-        };
+    // Создает елементы HTML и инициализирует переменные
+    render: function () {
+
+        this.container.innerHTML = `<ul id="tree_1" class="tree">${this.getHtml(this.tree)}</ul>${this.blockChanges.render()}`;
+        this.init();
     },
 
-    // Принимает объект древовидной структуры, возвращает код HTML
-    getHtml: function (objTree) {
-        // Проверяем один раз на наличие скилов и результат используем
-        let skills = !!objTree.skills;
-        let res = `<li><button class="line${(skills) ? ' parent' : ''}"><span class="line__text">${objTree.name}</span></button>`;
-
-        // Если есть skills, то создаем обертку ul и бежим по внутренностям
-        if (skills) {
-            res += '<ul class="list">';
-            for (let i = 0; objTree.skills[i]; ++i) {
-                res += this.getHtml(objTree.skills[i]);
-            }
-            res += '</ul>';
-        }
-        res += '</li>';
-        return res;
-    }
 
 };
-console.log(renderTreeObj.number);
+
 
 renderTreeObj.start(tree,"container_1");
-console.log(renderTreeObj.number);
+renderTreeObj.start(tree1,"container_2");

@@ -104,8 +104,9 @@ gulp.task('stylus',function () {
 });
 
 // Все стили
-gulp.task('sass', [ 'sass-main-screen','sass-blocks','sass-sass'], function() {
+gulp.task('sass', [ 'sass-libs','sass-mylibs','sass-main-screen','sass-blocks','sass-sass'], function() {
     return gulp.src([
+        'app/css/libs.min.css',
         'app/css/main.min.css',
         'app/css/blocks.min.css',
     ])
@@ -121,6 +122,28 @@ gulp.task('sass-sass', function() {
     return gulp.src([
         'app/sass/**/*.+(scss|sass)',
     ])
+        .pipe(sass({outputStyle: 'expand'}).on("error", notify.onError()))
+        .pipe(rename({suffix: '.min', prefix : ''}))
+        .pipe(gulp.dest('app/css'))
+});
+
+// Стили из libs
+gulp.task('sass-libs', function() {
+    return gulp.src([
+        'app/libs/**/*.+(scss|sass)',
+    ])
+        .pipe(concat('libs.sass'))
+        .pipe(sass({outputStyle: 'expand'}).on("error", notify.onError()))
+        .pipe(rename({suffix: '.min', prefix : ''}))
+        .pipe(gulp.dest('app/css'))
+});
+
+// Стили из mylibs
+gulp.task('sass-mylibs', function() {
+    return gulp.src([
+        'app/mylibs/**/*.+(scss|sass)',
+    ])
+        .pipe(concat('libs.sass'))
         .pipe(sass({outputStyle: 'expand'}).on("error", notify.onError()))
         .pipe(rename({suffix: '.min', prefix : ''}))
         .pipe(gulp.dest('app/css'))
