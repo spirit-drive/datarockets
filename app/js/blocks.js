@@ -139,18 +139,21 @@ let tree = {
     ]
 };
 
-let treeFunc = {
+let renderTreeObj = {
+    number: 0,
     container: '',
     tree: '',
-    start: function (tree,idElem) {
+    start: function (obj,idContainer) {
+
+        ++this.number;
 
         // Если в локальной истории что-то есть, то берем данные оттуда
         let localStorageTree = localStorage.getItem("tree");
-        // this.tree = (localStorageTree) ? JSON.parse(localStorageTree) : tree;
-        this.tree = tree;
+        // this.tree = (localStorageTree) ? JSON.parse(localStorageTree) : obj;
+        this.tree = obj;
 
         // Присваиваем контейнер и рендерим элементы по объекту
-        this.container = document.getElementById(idElem);
+        this.container = document.getElementById(idContainer);
         this.render();
     },
 
@@ -167,14 +170,16 @@ let treeFunc = {
         // Бежим по всем элементам списка
         for (let i = 0; tree.skills[i]; ++i){
 
-            // Если найден элемент, то выполнем операцию и завершаем функцию
+            // Если найден элемент, то выполнем обозначенную операцию и завершаем функцию
             if (tree.skills[i].name === name && tree.name === parent){
                 switch (func){
 
+                    // Редактирование
                     case 'edit':
                         tree.skills[i].name = newName;
                         break;
 
+                    // Добавление подстроки
                     case 'add':
                         let skills = tree.skills[i].skills;
                         if (skills){
@@ -184,6 +189,7 @@ let treeFunc = {
                         }
                         break;
 
+                    // Удаление
                     case 'del':
                     case 'delete':
                         tree.skills.splice(i, 1);
@@ -192,6 +198,7 @@ let treeFunc = {
                         }
                         break;
 
+                    // По умолчанию добавление
                     default:
                         tree.skills[i].name = newName;
                 }
@@ -209,26 +216,102 @@ let treeFunc = {
         }
     },
 
-    // Создает елементы HTML
+    // Создает елементы HTML и инициализирует переменные
     render: function () {
 
-        this.container.innerHTML = `<ul id="tree_1" class="tree">${this.getHtml(this.tree)}</ul>${this.blockChange.render()}`;
+        this.container.innerHTML = `<ul id="tree_1" class="tree">${this.getHtml(this.tree)}</ul>${this.blockChanges.render()}`;
         this.init();
     },
 
     // Элемент из списка (линия)
     line: {
         elem: '',
-        hideShowSublist: function (callingContext) {
-            $(callingContext).parent().children('.list').slideToggle();
+
+        // Убирает/показывает под список, если он есть
+        hideShowSublist: function (currentElem) {
+            $(currentElem).parent().children('.list').slideToggle();
         },
+
+        // Инициализирует переменные и события
         init: function () {
+            let pendingClick = 0;
+            let line = this;
+
             this.elem = $('.line');
+
+            // При клике
+            this.elem.click(function (e) {
+
+                // Элемент вызова
+                let currentElem = this;
+
+                // При втором клике обнаружит, что уже есть отложенный клик, отменит действие и выполнит функции двойного клика
+                if (pendingClick) {
+                    clearTimeout(pendingClick);
+                    pendingClick = 0;
+                }
+
+                switch(e.originalEvent.detail){
+
+                    // При одиночном клике
+                    case 1:
+                        pendingClick = setTimeout(function () {
+
+                            let blockChanges = renderTreeObj.blockChanges;
+
+                            // Если элемент на блоке изменений, то при клике на другой элемент закрываем блок изменений
+                            // В противном случае скрываем подсписок у нажатого элемента
+                            if (blockChanges.focus){
+                                blockChanges.close();
+                                $(currentElem).focus(); // Фокус на
+                                blockChanges.focus = false;
+                            } else {
+                                line.hideShowSublist(currentElem);
+                            }
+                        },200);
+                        break;
+
+                    // При двойном клике
+                    case 2:
+
+                        // Показываем блок изменений
+                        renderTreeObj.blockChanges.show(this);
+                        break;
+                }
+            });
+
+            // При нажатии клавиш на сфокусированном объекте
+            this.elem.focus(function () {
+                $(this).keyup(function (e) {
+
+                    switch (e.keyCode){
+
+                        // del
+                        case 46:
+                            renderTreeObj.blockChanges.del(this);
+                            break;
+
+                        // enter
+                        case 13:
+                            renderTreeObj.blockChanges.show(this);
+                            break;
+
+                        // space
+                        case 32:
+                            line.hideShowSublist(this);
+                            break;
+                    }
+                });
+            });
+
+
         },
     },
 
     // Блок изменений элемента из списка
-    blockChange: {
+    blockChanges: {
+
+        // Необходимые переменные
         elem: '',
         input: '',
         saveButton: '',
@@ -238,6 +321,8 @@ let treeFunc = {
         currentElem: '',
 
         focus: false,
+
+        // Создает Html блока
         render: function () {
             return `<div id="change_1" class="change">
                         <input id="change__field_1" class="change__field" value=""/>
@@ -246,9 +331,14 @@ let treeFunc = {
                         <button id="change__del_1" class="change__del">Удалить</button>
                         </div>`;
         },
+
+        // Закрывает блок
         close: function () {
             this.elem.hide();
+            $(this.currentElem).focus();
         },
+
+        // Показывает блок
         show: function (currentElem) {
 
             this.currentElem = currentElem;
@@ -286,53 +376,97 @@ let treeFunc = {
                 'fontSize' : input.fontSize,
             });
         },
+
+        // Сохранить значение пункта
         save: function () {
-            let tree = treeFunc.tree;
-            let elemText = treeFunc.getNames(this.currentElem).elem;
-            let parentText = treeFunc.getNames(this.currentElem).parent;
+            let tree = renderTreeObj.tree;
+            let elemText = renderTreeObj.getNames(this.currentElem).elem;
+            let parentText = renderTreeObj.getNames(this.currentElem).parent;
             let inputValue = this.input.val();
 
             // Только если значение инпута отличается от первоначального текста
             if (inputValue !== elemText){
-                treeFunc.operations('edit',tree,elemText,parentText,inputValue);
+                renderTreeObj.operations('edit',tree,elemText,parentText,inputValue);
+                renderTreeObj.blockChanges.focusLine('.line__text',inputValue);
             }
 
             // Закрываем окно в любом случае
             this.close();
 
         },
+
+        // Добавить подстроку
         add: function () {
-            let tree = treeFunc.tree;
-            let elemText = treeFunc.getNames(this.currentElem).elem;
-            let parentText = treeFunc.getNames(this.currentElem).parent;
+            let tree = renderTreeObj.tree;
+            let elemText = renderTreeObj.getNames(this.currentElem).elem;
+            let parentText = renderTreeObj.getNames(this.currentElem).parent;
             let inputValue = this.input.val();
 
-            treeFunc.operations('add',tree,elemText,parentText,inputValue);
+            // Все операции добавления
+            function add() {
+                renderTreeObj.operations('add',tree,elemText,parentText,inputValue);
+                renderTreeObj.blockChanges.close();
+                renderTreeObj.blockChanges.focusLine('.parent .line__text',inputValue);
+            }
 
-            // Закрываем окно в любом случае
-            this.close();
+            // Если сработала функция добавления, то текст такой же как элемента, вероятно функция вызвана по ошибке
+            if (inputValue === elemText){
+                if (confirm(`Вы хотите добавить строку с тем же названием, что и у родителя? "${elemText}"`)){
+                    // Небольшая задержка для комфортного наблюдения
+                    setTimeout(function () {
+                        add();
+                    },300);
+                }
+            } else {
+                add();
+            }
 
 
         },
-        del: function () {
-            let tree = treeFunc.tree;
-            let elemText = treeFunc.getNames(this.currentElem).elem;
-            let parentText = treeFunc.getNames(this.currentElem).parent;
+
+        // Удалить выбранный пункт
+        del: function (currentElem) {
+
+            let curElem = (currentElem) ? currentElem : this.currentElem;
+            let tree = renderTreeObj.tree;
+            let elemText = renderTreeObj.getNames(curElem).elem;
+            let parentText = renderTreeObj.getNames(curElem).parent;
+
+            // Принимает текст текущего элемента, возвращает текст предыдущего элемента
+            function prevText(text) {
+                let parentElem = $(`.line__text:contains(${text})`).parent().parent();
+                let prevText = parentElem.prev().children().children('.line__text').text();
+                return (prevText) ? prevText : parentElem.parent().parent().children().children('.line__text').eq(0).text();
+            }
 
             if (confirm(`Удалить "${elemText}"?`)){
                 // Закрываем окно
-                this.close();
+                renderTreeObj.blockChanges.close();
 
-                $(this.currentElem).parent().slideUp();
+                // Скрываем элемент
+                $(curElem).parent().slideUp();
+
+                // Когда элемент скроется перерендериваем ветку
                 setTimeout(function () {
-                    treeFunc.operations('del',tree,elemText,parentText);
+                    // Переменные для определения фокусировки. Надо до рендеринга их определить
+                    let text = prevText(elemText);
+                    renderTreeObj.operations('del',tree,elemText,parentText);
+                    renderTreeObj.blockChanges.focusLine('.line__text',text);
+
                 }, 600);
             }
 
         },
+
+        // Фокусировка на элементе с в данным селектором и текстом
+        focusLine: function (selector,text) {
+            $(selector + `:contains(${text})`).parent().focus();
+        },
+
+        // Инициализация переменных и событий
         init: function () {
 
-            let blockChange = this;
+            let blockChanges = this;
 
             this.elem = $('#change_1');
             this.input = $('#change__field_1');
@@ -340,14 +474,15 @@ let treeFunc = {
             this.addButton = $('#change__add_1');
             this.delButton = $('#change__del_1');
 
+            // Функции нажатия на кнопки
             this.saveButton.click(function () {
-                blockChange.save();
+                blockChanges.save();
             });
             this.addButton.click(function () {
-                blockChange.add();
+                blockChanges.add();
             });
             this.delButton.click(function () {
-                blockChange.del();
+                blockChanges.del();
             });
 
             // При нажатии enter происходит функция сохранения
@@ -356,19 +491,19 @@ let treeFunc = {
                     switch (e.keyCode) {
                         // enter
                         case 13:
-                            blockChange.save();
+                            blockChanges.save();
                             break;
 
                     }
                 });
             });
 
-            // Если
+            // Если esc блок изменений закрывается
             $(window).keyup(function (e) {
                 switch (e.keyCode) {
                     // esc
                     case 27:
-                        blockChange.close();
+                        blockChanges.close();
                         break;
                 }
             });
@@ -381,100 +516,30 @@ let treeFunc = {
     init: function () {
 
         // Инициализируем элементы
-        this.blockChange.init();
+        this.blockChanges.init();
         this.line.init();
 
-        // Необходимые переменные
-        let callingContext = this;
-        let pendingClick = 0;
-
-        // При клике
-        this.line.elem.click(function (e) {
-
-            // Элемент вызова
-            let elemCall = this;
-
-            // При втором клике обнаружит, что уже есть отложенный клик, отменит действие и выполнит функции двойного клика
-            if (pendingClick) {
-                clearTimeout(pendingClick);
-                pendingClick = 0;
-            }
-
-            switch(e.originalEvent.detail){
-
-                // При одиночном клике
-                case 1:
-                    pendingClick = setTimeout(function () {
-
-                        let blockChange = callingContext.blockChange;
-
-                        // Если элемент на блоке изменений, то при клике на другой элемент закрываем блок изменений
-                        // В противном случае скрываем подсписок у нажатого элемента
-                        if (blockChange.focus){
-                            blockChange.close();
-                            blockChange.focus = false;
-                        } else {
-                            callingContext.line.hideShowSublist(elemCall);
-                        }
-                    },200);
-                    break;
-                // При двойном клике
-                case 2:
-
-                    // Показываем блок изменений
-                    callingContext.blockChange.show(this);
-                    break;
-            }
-        });
-
-        // При нажатии клавиш на сфокусированном объекте
-        this.line.elem.focus(function () {
-            $(this).keyup(function (e) {
-                let param = callingContext.getNames(this);
-
-                console.log(e.keyCode);
-
-                switch (e.keyCode){
-
-                    // del
-                    case 46:
-                        if (confirm(`Удалить "${param.elem}"?`)){
-                            $(this).parent().slideUp();
-                            setTimeout(function () {
-                                callingContext.operations('del',callingContext.tree,param.elem,param.parent);
-                            }, 600);
-                        }
-                        break;
-
-                    // enter
-                    case 13:
-                        callingContext.blockChange.show(this);
-                        break;
-
-                }
-            });
-        });
     },
 
-    // Принимает контекст вызова, возвращает текст родителя и самого элемента
-    getNames: function (context) {
+    // Принимает выбранный элемент, возвращает текст родителя и самого элемента
+    getNames: function (currentElem) {
         return {
-            parent: $(context).parent().parent().parent().children('.line').text(),
-            elem: $(context).text(),
+            parent: $(currentElem).parent().parent().parent().children('.line').text(),
+            elem: $(currentElem).text(),
         };
     },
 
     // Принимает объект древовидной структуры, возвращает код HTML
-    getHtml: function (tree) {
+    getHtml: function (objTree) {
         // Проверяем один раз на наличие скилов и результат используем
-        let skills = !!tree.skills;
-        let res = `<li><button class="line${(skills) ? ' parent' : ''}"><span>${tree.name}</span></button>`;
+        let skills = !!objTree.skills;
+        let res = `<li><button class="line${(skills) ? ' parent' : ''}"><span class="line__text">${objTree.name}</span></button>`;
 
         // Если есть skills, то создаем обертку ul и бежим по внутренностям
         if (skills) {
             res += '<ul class="list">';
-            for (let i = 0; tree.skills[i]; ++i) {
-                res += this.getHtml(tree.skills[i]);
+            for (let i = 0; objTree.skills[i]; ++i) {
+                res += this.getHtml(objTree.skills[i]);
             }
             res += '</ul>';
         }
@@ -483,5 +548,7 @@ let treeFunc = {
     }
 
 };
+console.log(renderTreeObj.number);
 
-treeFunc.start(tree,"container");
+renderTreeObj.start(tree,"container_1");
+console.log(renderTreeObj.number);
