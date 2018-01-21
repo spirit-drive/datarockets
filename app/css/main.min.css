@@ -23,9 +23,21 @@ textarea {
   font-size: 18px;
   font-family: "OpenSans", sans-serif; }
 
-button {
-  border: none;
-  background: none; }
+.change {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding-left: 8px;
+  background: #dadada; }
+  .change * {
+    height: 30px;
+    vertical-align: top; }
+  .change__field {
+    border: none;
+    outline: none;
+    background: #dadada; }
 
 .line {
   width: 100%;
@@ -33,7 +45,9 @@ button {
   cursor: pointer;
   -webkit-transition: all .1s;
   -o-transition: all .1s;
-  transition: all .1s; }
+  transition: all .1s;
+  border: none;
+  background: none; }
   .line:hover, .line:focus {
     background: #dadada; }
   .line:active {
