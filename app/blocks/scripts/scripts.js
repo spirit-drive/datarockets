@@ -149,8 +149,8 @@ let tree1 = {
 
 let renderTreeObj = {
     number: 0,
-    container: '',
-    tree: '',
+    container: [],
+    tree: [],
     start: function (obj,idContainer) {
 
         ++this.number;
@@ -158,10 +158,10 @@ let renderTreeObj = {
         // Если в локальной истории что-то есть, то берем данные оттуда
         let localStorageTree = localStorage.getItem("tree" + this.number);
         // this.tree = (localStorageTree) ? JSON.parse(localStorageTree) : obj;
-        this.tree = obj;
+        this.tree.push(obj);
 
         // Присваиваем контейнер и рендерим элементы по объекту
-        this.container = document.getElementById(idContainer);
+        this.container.push(document.getElementById(idContainer));
         this.render();
     },
 
@@ -180,6 +180,7 @@ let renderTreeObj = {
         // Останавливаем функцию, если нет какого-то из данных
         if (!tree || !name){ return; }
 
+        // Для самого верхнего элемента
         if (tree.name === name){
 
             switch (func){
@@ -215,6 +216,9 @@ let renderTreeObj = {
             return;
 
         }
+
+        // Останавливаем функцию, если нет какого-то из данных
+        if (!parent){ return; }
 
         // Бежим по всем элементам списка
         for (let i = 0; tree.skills[i]; ++i){
@@ -270,7 +274,7 @@ let renderTreeObj = {
 
         // Убирает/показывает под список, если он есть
         hideShowSublist: function (currentElem) {
-            $(currentElem).parent().children('.list_' + renderTreeObj.number).slideToggle();
+            $(currentElem).parent().children('.list').slideToggle();
         },
 
         // Инициализирует переменные и события
@@ -358,6 +362,7 @@ let renderTreeObj = {
         delButton: '',
 
         currentElem: '',
+        idTree: '',
 
         focus: false,
 
@@ -371,6 +376,7 @@ let renderTreeObj = {
         show: function (currentElem) {
 
             this.currentElem = currentElem;
+            this.idTree = currentElem.className.match(/\d+/g)[0] - 1;
 
             let thisElem = $(currentElem);
 
@@ -409,34 +415,37 @@ let renderTreeObj = {
         // Сохранить значение пункта
         save: function () {
             let tree = renderTreeObj.tree;
-            console.log(tree);
-            let elemText = renderTreeObj.getNames(this.currentElem).elem;
-            let parentText = renderTreeObj.getNames(this.currentElem).parent;
-            let inputValue = this.input.val();
+            let blockChanges = renderTreeObj.blockChanges;
+            let elemText = renderTreeObj.getNames(blockChanges.currentElem).elem;
+            let parentText = renderTreeObj.getNames(blockChanges.currentElem).parent;
+            let inputValue = blockChanges.input.val();
 
             // Только если значение инпута отличается от первоначального текста
             if (inputValue !== elemText){
-                renderTreeObj.operations('edit',tree,elemText,parentText,inputValue);
-                renderTreeObj.blockChanges.focusLine('.line__text_' + renderTreeObj.number,inputValue);
+                renderTreeObj.operations('edit',tree[blockChanges.idTree],elemText,parentText,inputValue);
+                console.log(tree[blockChanges.idTree]);
+                blockChanges.focusLine('.line__text_' + renderTreeObj.number,inputValue);
             }
 
             // Закрываем окно в любом случае
-            this.close();
+            blockChanges.close();
 
         },
 
         // Добавить подстроку
         add: function () {
             let tree = renderTreeObj.tree;
-            let elemText = renderTreeObj.getNames(this.currentElem).elem;
-            let parentText = renderTreeObj.getNames(this.currentElem).parent;
-            let inputValue = this.input.val();
+            let blockChanges = renderTreeObj.blockChanges;
+            let elemText = renderTreeObj.getNames(blockChanges.currentElem).elem;
+            let parentText = renderTreeObj.getNames(blockChanges.currentElem).parent;
+            let inputValue = blockChanges.input.val();
 
             // Все операции добавления
             function add() {
                 renderTreeObj.operations('add',tree,elemText,parentText,inputValue);
-                renderTreeObj.blockChanges.close();
-                renderTreeObj.blockChanges.focusLine('.parent .line__text_' + renderTreeObj.number,inputValue);
+                blockChanges.close();
+                blockChanges.focusLine('.parent .line__text_' + renderTreeObj.number,inputValue);
+
             }
 
             // Если сработала функция добавления, то текст такой же как элемента, вероятно функция вызвана по ошибке
@@ -568,7 +577,7 @@ let renderTreeObj = {
 
         // Если есть skills, то создаем обертку ul и бежим по внутренностям
         if (skills) {
-            res += `<ul class="list_${this.number}">`;
+            res += `<ul class="list">`;
             for (let i = 0; objTree.skills[i]; ++i) {
                 res += this.getHtml(objTree.skills[i]);
             }
@@ -590,7 +599,7 @@ let renderTreeObj = {
     // Создает елементы HTML и инициализирует переменные
     render: function () {
 
-        this.container.innerHTML = `<ul id="tree_1" class="tree">${this.getHtml(this.tree)}</ul>${this.blockChanges.render()}`;
+        this.container[this.container.length - 1].innerHTML = `<ul id="tree_${this.number}" class="tree">${this.getHtml(this.tree[this.tree.length - 1])}</ul>${this.blockChanges.render()}`;
         this.init();
     },
 
