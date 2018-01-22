@@ -4,13 +4,13 @@
     <option asi="false" />
     <option bitwise="true" />
     <option boss="false" />
-    <option browser="true" />
-    <option browserify="false" />
+    <option browser="false" />
+    <option browserify="true" />
     <option camelcase="false" />
     <option couch="false" />
     <option curly="true" />
     <option debug="false" />
-    <option devel="false" />
+    <option devel="true" />
     <option dojo="false" />
     <option elision="false" />
     <option enforceall="false" />
@@ -18,7 +18,7 @@
     <option eqnull="false" />
     <option es3="false" />
     <option es5="false" />
-    <option esnext="false" />
+    <option esnext="true" />
     <option evil="false" />
     <option expr="false" />
     <option forin="true" />
