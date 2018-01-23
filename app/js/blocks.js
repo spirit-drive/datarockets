@@ -151,6 +151,7 @@ let renderTrees = {
     number: 0,
     container: '',
     tree: '',
+    nameFirst: '',
     currentElem: '',
     start: function (obj,idContainer) {
 
@@ -160,6 +161,8 @@ let renderTrees = {
         let localStorageTree = localStorage.getItem("tree");
         // this.tree = (localStorageTree) ? JSON.parse(localStorageTree) : obj;
         this.tree = obj;
+
+        this.nameFirst = this.tree.name;
 
         // Присваиваем контейнер и рендерим элементы по объекту
         this.container = document.getElementById(idContainer);
@@ -196,9 +199,8 @@ let renderTrees = {
                         tree.skills = [{name: newName}];
                     }
 
-                    // console.log(3,parent);
                     this.currentElem.parentNode.parentNode.innerHTML = this.getHtml(tree);
-                    this.init();
+                    // this.init();
                     break;
 
                 // Удаление
@@ -246,12 +248,9 @@ let renderTrees = {
                             tree.skills[i].skills = [{name: newName}];
                         }
 
-                        // console.log(4,parent);
-                        // console.log(5,this.currentElem.parentNode.parentNode.childNodes[i]);
-
                         // Рендерим родительскую ветку и инициализируем переменные и события
                         this.currentElem.parentNode.parentNode.childNodes[i].innerHTML = this.getHtmlBranch(tree.skills[i]);
-                        this.init();
+                        // this.init();
                         break;
 
                     // Удаление
@@ -265,7 +264,7 @@ let renderTrees = {
 
                         // Рендерим родительскую ветку и инициализируем переменные и события
                         this.currentElem.parentNode.parentNode.parentNode.innerHTML = this.getHtmlBranch(tree);
-                        this.init();
+                        // this.init();
                         break;
 
                     // По умолчанию добавление
@@ -449,20 +448,14 @@ let renderTrees = {
 
         // Добавить подстроку
         add: function () {
-            // ++this.i;
+            ++this.i;
             let tree = renderTrees.tree;
             let elemText = renderTrees.getNames(renderTrees.currentElem).elem;
             let parentText = renderTrees.getNames(renderTrees.currentElem).parent;
             let inputValue = this.input.val();
-            console.log(0,renderTrees.currentElem);
-            console.log(1,renderTrees.currentElem.parentNode.parentNode);
-            // console.log(1,parentText);
-
-            // console.log(this.i);
 
             // Все операции добавления
             function add() {
-                // console.log(2,parentText);
                 renderTrees.operations('add',tree,elemText,parentText,inputValue);
                 renderTrees.blockChanges.close();
             }
@@ -525,9 +518,8 @@ let renderTrees = {
             this.saveButton.click(function () {
                 blockChanges.save();
             });
+            // this.addButton.unbind();
             this.addButton.click(function () {
-                // ++blockChanges.i;
-                // console.log(++blockChanges.i);
                 blockChanges.add();
             });
             this.delButton.click(function () {
