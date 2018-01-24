@@ -139,19 +139,40 @@ let tree = {
     ]
 };
 let tree1 = {
-    name: '1213',
+    name: "Stylesheets",
     skills: [
         {
-            name: '1243'
-        }
+            name: 'class'
+        },
+        {
+            name: "Positioning",
+            skills: [
+                {
+                    name: "static, relative and absolute, fixed, sticky"
+                }
+            ]
+        },
+        {
+            name: "Understanding of box model"
+        },
+        {
+            name: "Understanding floating"
+        },
+        {
+            name: 'FlexBox'
+        },
+        {
+            name: 'Animations'
+        },
     ]
 };
 
 let renderTrees = {
     number: 0,
-    container: '',
-    tree: '',
-    currentElem: '',
+    id: null,
+    container: [],
+    tree: [],
+    currentElem: null,
     start: function (obj,idContainer) {
 
         ++this.number;
@@ -159,10 +180,10 @@ let renderTrees = {
         // Если в локальной истории что-то есть, то берем данные оттуда
         let localStorageTree = localStorage.getItem("tree_" + this.number);
         // this.tree = (localStorageTree) ? JSON.parse(localStorageTree) : obj;
-        this.tree = obj;
+        this.tree.push(obj);
 
         // Присваиваем контейнер и рендерим элементы по объекту
-        this.container = document.getElementById(idContainer);
+        this.container.push(document.getElementById(idContainer));
         this.render();
     },
 
@@ -197,7 +218,7 @@ let renderTrees = {
 
                     currentElem = this.currentElem.parentNode.parentNode;
                     this.currentElem.parentNode.parentNode.innerHTML = this.getHtml(tree);
-                    this.currentElem = $(currentElem).children().children('.line');
+                    this.currentElem = currentElem.childNodes[0].childNodes[0];
 
                 } else {
                     skills = tree.skills[i].skills;
@@ -212,7 +233,8 @@ let renderTrees = {
                     // Рендерим родительскую ветку и переназначаем переменную выбранного элемента
                     currentElem = this.currentElem.parentNode.parentNode.childNodes[i];
                     this.currentElem.parentNode.parentNode.childNodes[i].innerHTML = this.getHtmlBranch(tree.skills[i]);
-                    this.currentElem = $(currentElem).children('.line');
+                    this.currentElem = currentElem.childNodes[0];
+
                 }
                 break;
 
@@ -225,24 +247,37 @@ let renderTrees = {
                     delete tree.skills;
                     // Создаем элементы
                     this.render();
-                    this.currentElem = $(this.container).children().children().children('.line');
+                    this.currentElem = this.container[this.id].childNodes[0].childNodes[0].childNodes[0];
 
                 } else {
 
+
                     tree.skills.splice(i, 1);
                     // Если skills оказывается пустой, то и его удаляем
-                    if (!tree.skills.length) { delete tree.skills; }
+                    let isSkills = !tree.skills.length;
+                    if (isSkills) {
+                        delete tree.skills;
+                    }
 
                     // Рендерим родительскую ветку и переназначаем переменную выбранного элемента
                     currentElem = this.currentElem.parentNode.parentNode.parentNode;
                     this.currentElem.parentNode.parentNode.parentNode.innerHTML = this.getHtmlBranch(tree);
-                    this.currentElem = $(currentElem).children('.line');
 
+                    // Если скилов не оставалось, значи и детей не остовалось и текущим элемент - родитель
+                    if (isSkills) {
+                        this.currentElem = currentElem.childNodes[0];
+
+                    // В противном случае текущий элемент - следующий в списке, или предыдущий, если удаленный элемент был последним
+                    } else {
+                        let x = currentElem.childNodes[1].childNodes.length;
+                        let y = (i === x) ? i - 1 : i;
+                        this.currentElem = currentElem.childNodes[1].childNodes[y].childNodes[0];
+                    }
                 }
                 break;
         }
         // Сохраняем в локальную историю
-        localStorage.setItem("tree_" + this.number,JSON.stringify(this.tree, '', 2));
+        localStorage.setItem("tree_" + this.id,JSON.stringify(this.tree[this.id], '', 2));
     },
 
     // Производит операции над объектом древовидной структуры. Добавляет, Редактирует, Удаляет
@@ -255,16 +290,11 @@ let renderTrees = {
         // Останавливаем функцию, если нет какого-то из данных
         if (!tree || !name){ return; }
 
-        // Если нет родителя, то это либо корневой элемент, либо недостаток данных и завершаем функцию
-        if (!parent){
-
-            if (tree.name === name){
-                // Корневому элементу особые функции
-                this.operations(func,tree,newName);
-                return;
-
-            }
-            else { return; }
+        // Если текст родителя и дитя совпадает, значит корневой элемент
+        if (name === parent && tree.name === name){
+            // Корневому элементу особые функции
+            this.operations(func,tree,newName);
+            return;
         }
 
         // Бежим по всем элементам списка
@@ -285,22 +315,27 @@ let renderTrees = {
     // Элемент из списка (линия)
     line: {
         // Убирает/показывает под список, если он есть
-        hideShowSublist: function (currentElem) {
-            $(currentElem).parent().children('.list').slideToggle();
+        hideShowSublist: function () {
+            $(renderTrees.currentElem).parent().children('.list').slideToggle();
         },
 
         // Инициализирует переменные и события
         init: function () {
             let pendingClick = 0;
             let line = this;
+            // Если еще не определен id то берем номер количество вызовов .start
+            let index = (renderTrees.id) ? renderTrees.id : renderTrees.number - 1;
 
-            let container = $(renderTrees.container);
+            let container = $(renderTrees.container[index]);
+
+            // Удаляем все обработчики событий что были до этого
+            container.off();
 
             // При клике
             container.on('click','.line',function (e) {
 
-                // Текущий элемент
-                let currentElem = renderTrees.currentElem = this;
+                // Установить текущий элемент
+                renderTrees.currentElem = this;
 
                 // При втором клике обнаружит, что уже есть отложенный клик, отменит действие и выполнит функции двойного клика
                 if (pendingClick) {
@@ -322,9 +357,8 @@ let renderTrees = {
                                 blockChanges.close();
                                 blockChanges.focus = false;
                             } else {
-                                line.hideShowSublist(currentElem);
+                                line.hideShowSublist();
                             }
-                            console.log('line 1');
 
                         },200);
                         break;
@@ -333,9 +367,7 @@ let renderTrees = {
                     case 2:
 
                         // Показываем блок изменений
-                        renderTrees.blockChanges.show(this);
-                        console.log('line 2');
-
+                        renderTrees.blockChanges.show();
                         break;
                 }
 
@@ -343,25 +375,29 @@ let renderTrees = {
 
             // При нажатии клавиш на сфокусированном объекте
             container.on('keyup','.line',function (e) {
-                console.log('line_focus');
-
                 switch (e.keyCode){
 
                     // del
                     case 46:
-                        renderTrees.blockChanges.del(this);
+                        renderTrees.blockChanges.del();
                         break;
 
                     // enter
                     case 13:
-                        renderTrees.blockChanges.show(this);
+                        renderTrees.blockChanges.show();
                         break;
 
                     // space
                     case 32:
-                        line.hideShowSublist(this);
+                        line.hideShowSublist();
                         break;
                 }
+            });
+
+            // При фокусировании переменной currentElem присваиваем текущий элемент
+            container.on('focus','.line',function () {
+                renderTrees.currentElem = this;
+                renderTrees.id = $(this).parents('.tree').attr('id').match(/\d+/g)[0] - 1;
             });
         },
     },
@@ -370,33 +406,34 @@ let renderTrees = {
     blockChanges: {
 
         // Необходимые переменные
-        elem: '',
-        input: '',
-        saveButton: '',
-        addButton: '',
-        delButton: '',
+        elem: null,
+        input: null,
+        saveButton: null,
+        addButton: null,
+        delButton: null,
         focus: false,
 
         // Закрывает блок
         close: function (delayFocus) {
             this.elem.hide();
+            // Задержка потому что элемент может рендерится с задержкой,
+            // и если мы не задержим функцию, то фокус встанет на уже не существующий элемент
             setTimeout(function () {
-                if (renderTrees.currentElem){
-                    renderTrees.currentElem.focus();
-                }
-            },(delayFocus) ? delayFocus : 0);
+                renderTrees.currentElem.focus();
+            // По умолчанию 100 мс это позволяет при задержке enter открывать повторно окно редактирования, либо при коротком нажатии не открывать
+            },(delayFocus) ? delayFocus : 100);
         },
 
         // Показывает блок
-        show: function (currentElem) {
+        show: function () {
 
-            let thisElem = $(currentElem);
+            let thisElem = $(renderTrees.currentElem);
 
             // Показать
             this.elem.show();
 
             // Переменные элемента
-            let top = (thisElem.offset().top - $('#tree_' + renderTrees.number).offset().top) + (thisElem.height() - this.elem.height())/2;
+            let top = (thisElem.offset().top - $('#tree_' + (renderTrees.id + 1)).offset().top) + (thisElem.height() - this.elem.height())/2;
             let left = thisElem.offset().left;
 
             // Переменные инпута
@@ -426,9 +463,10 @@ let renderTrees = {
 
         // Сохранить значение пункта
         save: function () {
-            let tree = renderTrees.tree;
-            let elemText = renderTrees.getNames(renderTrees.currentElem).elem;
-            let parentText = renderTrees.getNames(renderTrees.currentElem).parent;
+            let tree = renderTrees.tree[renderTrees.id];
+            let names = renderTrees.getNames();
+            let elemText = names.elem;
+            let parentText = names.parent;
             let inputValue = this.input.val();
 
             // Только если значение инпута отличается от первоначального текста и непустое значение
@@ -442,10 +480,10 @@ let renderTrees = {
 
         // Добавить подстроку
         add: function () {
-            ++this.i;
-            let tree = renderTrees.tree;
-            let elemText = renderTrees.getNames(renderTrees.currentElem).elem;
-            let parentText = renderTrees.getNames(renderTrees.currentElem).parent;
+            let tree = renderTrees.tree[renderTrees.id];
+            let names = renderTrees.getNames();
+            let elemText = names.elem;
+            let parentText = names.parent;
             let inputValue = this.input.val();
 
             // Все операции добавления
@@ -461,6 +499,11 @@ let renderTrees = {
                     setTimeout(function () {
                         add();
                     },300);
+                } else {
+                    // Задержка для исключения длительгого нажатия esc и установки фокуса на input
+                    setTimeout(function () {
+                        renderTrees.blockChanges.show();
+                    },300);
                 }
             } else {
                 add();
@@ -470,16 +513,16 @@ let renderTrees = {
         },
 
         // Удалить выбранный пункт
-        del: function (currentElem) {
+        del: function () {
 
-            let curElem = (currentElem) ? currentElem : renderTrees.currentElem;
-            let tree = renderTrees.tree;
-            let elemText = renderTrees.getNames(curElem).elem;
-            let parentText = renderTrees.getNames(curElem).parent;
+            let tree = renderTrees.tree[renderTrees.id];
+            let names = renderTrees.getNames();
+            let elemText = names.elem;
+            let parentText = names.parent;
 
             if (confirm(`Удалить "${elemText}"?`)){
                 // Скрываем элемент
-                $(curElem).parent().slideUp();
+                $(renderTrees.currentElem).parent().slideUp();
 
                 // Когда элемент скроется перерендериваем ветку
                 setTimeout(function () {
@@ -488,6 +531,11 @@ let renderTrees = {
 
                 // Закрываем окно
                 renderTrees.blockChanges.close(600);
+            } else {
+                // Задержка для исключения длительгого нажатия esc и для установки фокуса на input
+                setTimeout(function () {
+                    renderTrees.blockChanges.show();
+                },300);
             }
 
         },
@@ -505,16 +553,12 @@ let renderTrees = {
 
             // Функции нажатия на кнопки
             this.saveButton.click(function () {
-                console.log('save');
                 blockChanges.save();
             });
-            // this.addButton.unbind();
             this.addButton.click(function () {
-                console.log('add');
                 blockChanges.add();
             });
             this.delButton.click(function () {
-                console.log('del');
                 blockChanges.del();
             });
 
@@ -523,8 +567,6 @@ let renderTrees = {
                     switch (e.keyCode) {
                         // enter
                         case 13:
-                            console.log('input_focus');
-
                             blockChanges.save();
                             break;
 
@@ -536,16 +578,14 @@ let renderTrees = {
                 switch (e.keyCode) {
                     // esc
                     case 27:
-                        console.log('window esc');
-
-                        blockChanges.close();
+                        blockChanges.close(0);
                         break;
                 }
             });
 
         },
 
-        // Создает Html блока изменения
+        // Создает Html код блока изменений
         render: function () {
             return `<div id="change_${renderTrees.number}" class="change">
                         <input id="change__field_${renderTrees.number}" class="change__field" value=""/>
@@ -557,11 +597,11 @@ let renderTrees = {
 
     },
 
-    // Принимает выбранный элемент, возвращает текст родителя и самого элемента
-    getNames: function (currentElem) {
+    // Возвращает текст родителя и самого элемента
+    getNames: function () {
         return {
-            parent: $(currentElem).parent().parent().parent().children('.line').text(),
-            elem: $(currentElem).text(),
+            parent: this.currentElem.parentNode.parentNode.parentNode.childNodes[0].innerText,
+            elem: this.currentElem.textContent,
         };
     },
 
@@ -600,8 +640,8 @@ let renderTrees = {
 
     // Создает елементы HTML и инициализирует переменные
     render: function () {
-
-        this.container.innerHTML = `<ul id="tree_${this.number}" class="tree">${this.getHtml(this.tree)}</ul>${this.blockChanges.render()}`;
+        let index = (this.id) ? this.id : this.number - 1;
+        this.container[index].innerHTML = `<div class="tree-block"><ul id="tree_${this.number}" class="tree">${this.getHtml(this.tree[index])}</ul>${this.blockChanges.render()}</div>`;
         this.init();
     },
 
@@ -610,3 +650,4 @@ let renderTrees = {
 
 
 renderTrees.start(tree,"container_1");
+// renderTrees.start(tree1,"container_2");

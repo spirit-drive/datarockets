@@ -1,13 +1,14 @@
-// let renderTreeObj = {
+// let renderTrees = {
 //     number: 0,
 //     container: '',
 //     tree: '',
+//     currentElem: '',
 //     start: function (obj,idContainer) {
 //
 //         ++this.number;
 //
 //         // Если в локальной истории что-то есть, то берем данные оттуда
-//         let localStorageTree = localStorage.getItem("tree");
+//         let localStorageTree = localStorage.getItem("tree_" + this.number);
 //         // this.tree = (localStorageTree) ? JSON.parse(localStorageTree) : obj;
 //         this.tree = obj;
 //
@@ -16,13 +17,100 @@
 //         this.render();
 //     },
 //
-//     endOperations: function () {
-//         this.render();
-//         localStorage.setItem("tree",JSON.stringify(this.tree, '', 2));
+//     // Производит операции над объектом древовидной структуры. Добавляет, Редактирует, Удаляет
+//     operations: function (func,tree,newName,i) {
+//         let currentElem;
+//         let isRoot = i === undefined;
+//         let skills;
+//         switch (func){
+//
+//             // Сохранение
+//             case 'save':
+//                 if (isRoot){
+//                     tree.name = newName;
+//                 } else {
+//                     tree.skills[i].name = newName;
+//                 }
+//                 this.currentElem.children[0].textContent = newName;
+//                 break;
+//
+//             // Добавление подстроки
+//             case 'add':
+//                 if (isRoot){
+//                     skills = tree.skills;
+//
+//                     // Если есть скилы, то добавляем в массив, если нет, то создаем массив
+//                     if (skills){
+//                         skills.push({name: newName});
+//                     } else {
+//                         tree.skills = [{name: newName}];
+//                     }
+//
+//                     currentElem = this.currentElem.parentNode.parentNode;
+//                     this.currentElem.parentNode.parentNode.innerHTML = this.getHtml(tree);
+//                     this.currentElem = $(currentElem).children().children('.line')[0];
+//
+//                 } else {
+//                     skills = tree.skills[i].skills;
+//
+//                     // Если есть скилы, то добавляем в массив, если нет, то создаем массив
+//                     if (skills){
+//                         skills.push({name: newName});
+//                     } else {
+//                         tree.skills[i].skills = [{name: newName}];
+//                     }
+//
+//                     // Рендерим родительскую ветку и переназначаем переменную выбранного элемента
+//                     currentElem = this.currentElem.parentNode.parentNode.childNodes[i];
+//                     this.currentElem.parentNode.parentNode.childNodes[i].innerHTML = this.getHtmlBranch(tree.skills[i]);
+//                     this.currentElem = $(currentElem).children('.line')[0];
+//
+//                 }
+//                 break;
+//
+//             // Удаление
+//             case 'del':
+//
+//                 if (isRoot){
+//
+//                     tree.name = 'Новая ветка';
+//                     delete tree.skills;
+//                     // Создаем элементы
+//                     this.render();
+//                     this.currentElem = $(this.container).children().children().children('.line')[0];
+//
+//                 } else {
+//
+//                     tree.skills.splice(i, 1);
+//                     // Если skills оказывается пустой, то и его удаляем
+//                     let isSkills = !tree.skills.length;
+//                     if (isSkills) {
+//                         delete tree.skills;
+//                     }
+//
+//                     // Рендерим родительскую ветку и переназначаем переменную выбранного элемента
+//                     currentElem = this.currentElem.parentNode.parentNode.parentNode;
+//                     this.currentElem.parentNode.parentNode.parentNode.innerHTML = this.getHtmlBranch(tree);
+//
+//                     // Если скилов не оставалось, значи и детей не остовалось и текущим элемент - родитель
+//                     if (isSkills) {
+//                         this.currentElem = currentElem.childNodes[0];
+//
+//                         // В противном случае текущий элемент - следующий в списке, или предыдущий, если удаленный элемент был последним
+//                     } else {
+//                         let x = currentElem.childNodes[1].childNodes.length;
+//                         let y = (i === x) ? i - 1 : i;
+//                         this.currentElem = currentElem.childNodes[1].childNodes[y].childNodes[0];
+//                     }
+//                 }
+//                 break;
+//         }
+//         // Сохраняем в локальную историю
+//         localStorage.setItem("tree_" + this.number,JSON.stringify(this.tree, '', 2));
 //     },
 //
-//     // Произодит операции над объектом древовидной структуры. Добавляет, Редактирует, Удаляет
-//     operations: function (func,tree,name,parent,newName) {
+//     // Производит операции над объектом древовидной структуры. Добавляет, Редактирует, Удаляет
+//     search: function (func,tree,name,parent,newName) {
 //         // tree - объект древовидной структуры
 //         // name - параметр, который будет изменен
 //         // newName - новый параметр
@@ -31,40 +119,16 @@
 //         // Останавливаем функцию, если нет какого-то из данных
 //         if (!tree || !name){ return; }
 //
-//         if (tree.name === name){
+//         // Если нет родителя, то это либо корневой элемент, либо недостаток данных и завершаем функцию
+//         if (!parent){
 //
-//             switch (func){
+//             if (tree.name === name){
+//                 // Корневому элементу особые функции
+//                 this.operations(func,tree,newName);
+//                 return;
 //
-//                 // Редактирование
-//                 case 'edit':
-//                     tree.name = newName;
-//                     break;
-//
-//                 // Добавление подстроки
-//                 case 'add':
-//                     let skills = tree.skills;
-//                     if (skills){
-//                         skills.push({name: newName});
-//                     } else {
-//                         tree.skills = [{name: newName}];
-//                     }
-//                     break;
-//
-//                 // Удаление
-//                 case 'del':
-//                 case 'delete':
-//                     tree.name = 'Новая ветка';
-//                     delete tree.skills;
-//                     break;
-//
-//                 // По умолчанию добавление
-//                 default:
-//                     tree.name = newName;
 //             }
-//             // Рендерим элементы, сохраняем в локальную историю, завершем функцию
-//             this.endOperations();
-//             return;
-//
+//             else { return; }
 //         }
 //
 //         // Бежим по всем элементам списка
@@ -72,53 +136,18 @@
 //
 //             // Если найден элемент, то выполнем обозначенную операцию и завершаем функцию
 //             if (tree.skills[i].name === name && tree.name === parent){
-//                 switch (func){
 //
-//                     // Редактирование
-//                     case 'edit':
-//                         tree.skills[i].name = newName;
-//                         break;
-//
-//                     // Добавление подстроки
-//                     case 'add':
-//                         let skills = tree.skills[i].skills;
-//                         if (skills){
-//                             skills.push({name: newName});
-//                         } else {
-//                             tree.skills[i].skills = [{name: newName}];
-//                         }
-//                         break;
-//
-//                     // Удаление
-//                     case 'del':
-//                     case 'delete':
-//                         tree.skills.splice(i, 1);
-//                         if (!tree.skills.length) {
-//                             delete tree.skills;
-//                         }
-//                         break;
-//
-//                     // По умолчанию добавление
-//                     default:
-//                         tree.skills[i].name = newName;
-//                 }
-//
-//                 // Рендерим элементы, сохраняем в локальную историю, завершем функцию
-//                 this.endOperations();
+//                 this.operations(func,tree,newName,i);
 //                 return;
 //             }
 //
-//             // Если есть скилы, то запускаем очередной поиск
-//             if (tree.skills[i].skills){
-//                 this.operations(func,tree.skills[i],name,parent,newName);
-//             }
+//             // Если есть подветка, ищем в подветке
+//             if (tree.skills[i].skills){ this.search(func,tree.skills[i],name,parent,newName); }
 //         }
 //     },
 //
 //     // Элемент из списка (линия)
 //     line: {
-//         elem: '',
-//
 //         // Убирает/показывает под список, если он есть
 //         hideShowSublist: function (currentElem) {
 //             $(currentElem).parent().children('.list').slideToggle();
@@ -129,13 +158,13 @@
 //             let pendingClick = 0;
 //             let line = this;
 //
-//             this.elem = $('.line');
+//             let container = $(renderTrees.container);
 //
 //             // При клике
-//             this.elem.click(function (e) {
+//             container.on('click','.line',function (e) {
 //
-//                 // Элемент вызова
-//                 let currentElem = this;
+//                 // Текущий элемент
+//                 let currentElem = renderTrees.currentElem = this;
 //
 //                 // При втором клике обнаружит, что уже есть отложенный клик, отменит действие и выполнит функции двойного клика
 //                 if (pendingClick) {
@@ -149,17 +178,17 @@
 //                     case 1:
 //                         pendingClick = setTimeout(function () {
 //
-//                             let blockChanges = renderTreeObj.blockChanges;
+//                             let blockChanges = renderTrees.blockChanges;
 //
 //                             // Если элемент на блоке изменений, то при клике на другой элемент закрываем блок изменений
 //                             // В противном случае скрываем подсписок у нажатого элемента
 //                             if (blockChanges.focus){
 //                                 blockChanges.close();
-//                                 $(currentElem).focus(); // Фокус на
 //                                 blockChanges.focus = false;
 //                             } else {
 //                                 line.hideShowSublist(currentElem);
 //                             }
+//
 //                         },200);
 //                         break;
 //
@@ -167,33 +196,37 @@
 //                     case 2:
 //
 //                         // Показываем блок изменений
-//                         renderTreeObj.blockChanges.show(this);
+//                         renderTrees.blockChanges.show(this);
+//
+//                         break;
+//                 }
+//
+//             });
+//
+//             // При нажатии клавиш на сфокусированном объекте
+//             container.on('keyup','.line',function (e) {
+//                 switch (e.keyCode){
+//
+//                     // del
+//                     case 46:
+//                         renderTrees.blockChanges.del(this);
+//                         break;
+//
+//                     // enter
+//                     case 13:
+//                         renderTrees.blockChanges.show(this);
+//                         break;
+//
+//                     // space
+//                     case 32:
+//                         line.hideShowSublist(this);
 //                         break;
 //                 }
 //             });
 //
-//             // При нажатии клавиш на сфокусированном объекте
-//             this.elem.focus(function () {
-//                 $(this).keyup(function (e) {
-//
-//                     switch (e.keyCode){
-//
-//                         // del
-//                         case 46:
-//                             renderTreeObj.blockChanges.del(this);
-//                             break;
-//
-//                         // enter
-//                         case 13:
-//                             renderTreeObj.blockChanges.show(this);
-//                             break;
-//
-//                         // space
-//                         case 32:
-//                             line.hideShowSublist(this);
-//                             break;
-//                     }
-//                 });
+//             // При фокусировании переменной currentElem присваиваем текущий элемент
+//             container.on('focus','.line',function () {
+//                 renderTrees.currentElem = this;
 //             });
 //         },
 //     },
@@ -207,21 +240,18 @@
 //         saveButton: '',
 //         addButton: '',
 //         delButton: '',
-//
-//         currentElem: '',
-//
 //         focus: false,
 //
 //         // Закрывает блок
-//         close: function () {
+//         close: function (delayFocus) {
 //             this.elem.hide();
-//             $(this.currentElem).focus();
+//             setTimeout(function () {
+//                 renderTrees.currentElem.focus();
+//             },(delayFocus) ? delayFocus : 0);
 //         },
 //
 //         // Показывает блок
 //         show: function (currentElem) {
-//
-//             this.currentElem = currentElem;
 //
 //             let thisElem = $(currentElem);
 //
@@ -229,12 +259,12 @@
 //             this.elem.show();
 //
 //             // Переменные элемента
-//             let top = (thisElem.offset().top - $('#tree_1').offset().top) + (thisElem.height() - this.elem.height())/2;
+//             let top = (thisElem.offset().top - $('#tree_' + renderTrees.number).offset().top) + (thisElem.height() - this.elem.height())/2;
 //             let left = thisElem.offset().left;
 //
 //             // Переменные инпута
 //             let input = {
-//                 width: thisElem.children().width(),
+//                 width: (thisElem.children().width() < 200) ? 200 : thisElem.children().width() + 12, // 200 и 12 - произвольные величины выбранные на глаз
 //                 fontFamily: thisElem.css('fontFamily'),
 //                 fontSize: thisElem.css('fontSize'),
 //                 text: thisElem.text(),
@@ -247,11 +277,11 @@
 //             });
 //
 //             // Действия над инпутом
-//             this.input.focus();
-//             this.focus = true;
 //             this.input.val(input.text);
+//             this.input.select();
+//             this.focus = true;
 //             this.input.css({
-//                 'width': input.width + 12, // 12 - произвольная величина выбранная на глаз
+//                 'width': input.width,
 //                 'fontFamily' : input.fontFamily,
 //                 'fontSize' : input.fontSize,
 //             });
@@ -259,35 +289,32 @@
 //
 //         // Сохранить значение пункта
 //         save: function () {
-//             let tree = renderTreeObj.tree;
-//             console.log(tree);
-//             let elemText = renderTreeObj.getNames(this.currentElem).elem;
-//             let parentText = renderTreeObj.getNames(this.currentElem).parent;
+//             let tree = renderTrees.tree;
+//             let elemText = renderTrees.getNames(renderTrees.currentElem).elem;
+//             let parentText = renderTrees.getNames(renderTrees.currentElem).parent;
 //             let inputValue = this.input.val();
 //
-//             // Только если значение инпута отличается от первоначального текста
-//             if (inputValue !== elemText){
-//                 renderTreeObj.operations('edit',tree,elemText,parentText,inputValue);
-//                 renderTreeObj.blockChanges.focusLine('.line__text',inputValue);
+//             // Только если значение инпута отличается от первоначального текста и непустое значение
+//             if (inputValue !== elemText && inputValue){
+//                 renderTrees.search('save',tree,elemText,parentText,inputValue);
 //             }
 //
-//             // Закрываем окно в любом случае
+//             // Закрываем окно в любом случае и возвращаем фокус на выбранный элемент
 //             this.close();
-//
 //         },
 //
 //         // Добавить подстроку
 //         add: function () {
-//             let tree = renderTreeObj.tree;
-//             let elemText = renderTreeObj.getNames(this.currentElem).elem;
-//             let parentText = renderTreeObj.getNames(this.currentElem).parent;
+//             ++this.i;
+//             let tree = renderTrees.tree;
+//             let elemText = renderTrees.getNames(renderTrees.currentElem).elem;
+//             let parentText = renderTrees.getNames(renderTrees.currentElem).parent;
 //             let inputValue = this.input.val();
 //
 //             // Все операции добавления
 //             function add() {
-//                 renderTreeObj.operations('add',tree,elemText,parentText,inputValue);
-//                 renderTreeObj.blockChanges.close();
-//                 renderTreeObj.blockChanges.focusLine('.parent .line__text',inputValue);
+//                 renderTrees.search('add',tree,elemText,parentText,inputValue);
+//                 renderTrees.blockChanges.close();
 //             }
 //
 //             // Если сработала функция добавления, то текст такой же как элемента, вероятно функция вызвана по ошибке
@@ -308,40 +335,24 @@
 //         // Удалить выбранный пункт
 //         del: function (currentElem) {
 //
-//             let curElem = (currentElem) ? currentElem : this.currentElem;
-//             let tree = renderTreeObj.tree;
-//             let elemText = renderTreeObj.getNames(curElem).elem;
-//             let parentText = renderTreeObj.getNames(curElem).parent;
-//
-//             // Принимает текст текущего элемента, возвращает текст предыдущего элемента
-//             function prevText(text) {
-//                 let parentElem = $(`.line__text:contains(${text})`).parent().parent();
-//                 let prevText = parentElem.prev().children().children('.line__text').text();
-//                 return (prevText) ? prevText : parentElem.parent().parent().children().children('.line__text').eq(0).text();
-//             }
+//             let curElem = (currentElem) ? currentElem : renderTrees.currentElem;
+//             let tree = renderTrees.tree;
+//             let elemText = renderTrees.getNames(curElem).elem;
+//             let parentText = renderTrees.getNames(curElem).parent;
 //
 //             if (confirm(`Удалить "${elemText}"?`)){
-//                 // Закрываем окно
-//                 renderTreeObj.blockChanges.close();
-//
 //                 // Скрываем элемент
 //                 $(curElem).parent().slideUp();
 //
 //                 // Когда элемент скроется перерендериваем ветку
 //                 setTimeout(function () {
-//                     // Переменные для определения фокусировки. Надо до рендеринга их определить
-//                     let text = prevText(elemText);
-//                     renderTreeObj.operations('del',tree,elemText,parentText);
-//                     renderTreeObj.blockChanges.focusLine('.line__text');
-//
+//                     renderTrees.search('del',tree,elemText,parentText);
 //                 }, 600);
+//
+//                 // Закрываем окно
+//                 renderTrees.blockChanges.close(600);
 //             }
 //
-//         },
-//
-//         // Фокусировка на элементе с в данным селектором и текстом
-//         focusLine: function (selector,text) {
-//             $(selector + `:contains(${text})`).parent().focus();
 //         },
 //
 //         // Инициализация переменных и событий
@@ -349,16 +360,17 @@
 //
 //             let blockChanges = this;
 //
-//             this.elem = $('#change_1');
-//             this.input = $('#change__field_1');
-//             this.saveButton = $('#change__save_1');
-//             this.addButton = $('#change__add_1');
-//             this.delButton = $('#change__del_1');
+//             this.elem = $('#change_' + renderTrees.number);
+//             this.input = $('#change__field_' + renderTrees.number);
+//             this.saveButton = $('#change__save_' + renderTrees.number);
+//             this.addButton = $('#change__add_' + renderTrees.number);
+//             this.delButton = $('#change__del_' + renderTrees.number);
 //
 //             // Функции нажатия на кнопки
 //             this.saveButton.click(function () {
 //                 blockChanges.save();
 //             });
+//             // this.addButton.unbind();
 //             this.addButton.click(function () {
 //                 blockChanges.add();
 //             });
@@ -367,16 +379,14 @@
 //             });
 //
 //             // При нажатии enter происходит функция сохранения
-//             this.input.focus(function () {
-//                 $(this).keyup(function (e) {
-//                     switch (e.keyCode) {
-//                         // enter
-//                         case 13:
-//                             blockChanges.save();
-//                             break;
+//             this.input.keyup(function (e) {
+//                 switch (e.keyCode) {
+//                     // enter
+//                     case 13:
+//                         blockChanges.save();
+//                         break;
 //
-//                     }
-//                 });
+//                 }
 //             });
 //
 //             // Если esc блок изменений закрывается
@@ -391,13 +401,13 @@
 //
 //         },
 //
-//         // Создает Html блока
+//         // Создает Html блока изменения
 //         render: function () {
-//             return `<div id="change_1" class="change">
-//                         <input id="change__field_1" class="change__field" value=""/>
-//                         <button id="change__save_1" class="change__save">Сохранить</button>
-//                         <button id="change__add_1" class="change__add">Добавить подстроку</button>
-//                         <button id="change__del_1" class="change__del">Удалить</button>
+//             return `<div id="change_${renderTrees.number}" class="change">
+//                         <input id="change__field_${renderTrees.number}" class="change__field" value=""/>
+//                         <button id="change__save_${renderTrees.number}" title="Сохраняет название элементу" class="change__button change__save">Сохранить</button>
+//                         <button id="change__add_${renderTrees.number}" title="Добавляет подэлемент. Название берет из значения текста" class="change__button change__add">Добавить подстроку</button>
+//                         <button id="change__del_${renderTrees.number}" title="Удаляет текущий элемент. Значение текста никак не влияет" class="change__button change__del">Удалить</button>
 //                         </div>`;
 //         },
 //
@@ -411,11 +421,17 @@
 //         };
 //     },
 //
+//     // Возвращем тот же результут, что и getHtml, но без первой обертки <li></li>
+//     getHtmlBranch: function (objTree) {
+//         let html = this.getHtml(objTree);
+//         return html.slice(4,html.length - 5);
+//     },
+//
 //     // Принимает объект древовидной структуры, возвращает код HTML
 //     getHtml: function (objTree) {
 //         // Проверяем один раз на наличие скилов и результат используем
 //         let skills = !!objTree.skills;
-//         let res = `<li><button class="line${(skills) ? ' parent' : ''}"><span class="line__text">${objTree.name}</span></button>`;
+//         let res = `<li><button class="line${(skills) ? ' parent' : ''}"><span>${objTree.name}</span></button>`;
 //
 //         // Если есть skills, то создаем обертку ul и бежим по внутренностям
 //         if (skills) {
@@ -441,7 +457,7 @@
 //     // Создает елементы HTML и инициализирует переменные
 //     render: function () {
 //
-//         this.container.innerHTML = `<ul id="tree_1" class="tree">${this.getHtml(this.tree)}</ul>${this.blockChanges.render()}`;
+//         this.container.innerHTML = `<ul id="tree_${this.number}" class="tree">${this.getHtml(this.tree)}</ul>${this.blockChanges.render()}`;
 //         this.init();
 //     },
 //

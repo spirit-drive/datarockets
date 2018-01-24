@@ -2,6 +2,9 @@ ul,
 ol {
   margin-left: 50px; }
 
+.tree-block {
+  position: relative; }
+
 .change {
   display: none;
   position: absolute;
