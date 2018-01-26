@@ -166,6 +166,71 @@ let tree1 = {
         },
     ]
 };
+let tree2 = {
+    name: "JavaScript",
+    skills: [
+        {
+            name: "Core",
+            skills: [
+                {
+                    name: "DOM"
+                },
+                {
+                    name: "Events"
+                },
+                {
+                    name: "Data structures",
+                    skills: [
+                        {
+                            name: "Primitives and limitations"
+                        },
+                        {
+                            name: "Object"
+                        }
+                    ]
+                },
+            ]
+        },
+        {
+            name: "Approaches",
+            skills: [
+                {
+                    name: "OOP",
+                    skills: [
+                        {
+                            name: "class"
+                        },
+                        {
+                            name: "Prototypes"
+                        }
+                    ]
+                },
+                {
+                    name: "Asynchronous programming"
+                }
+            ]
+        },
+        {
+            name: "Frameworks & libraries",
+            skills: [
+                {
+                    name: "React"
+                },
+                {
+                    name: "jQuery"
+                }
+            ]
+        },
+        {
+            name: 'Additionally',
+            skills: [
+                {
+                    name: 'Gulp'
+                }
+            ]
+        }
+    ]
+};
 
 let renderTrees = {
     number: 0,
@@ -247,10 +312,9 @@ let renderTrees = {
                     delete tree.skills;
                     // Создаем элементы
                     this.render();
-                    this.currentElem = this.container[this.id].childNodes[0].childNodes[0].childNodes[0];
+                    this.currentElem = this.container[this.id].childNodes[0].childNodes[0].childNodes[0].childNodes[0];
 
                 } else {
-
 
                     tree.skills.splice(i, 1);
                     // Если skills оказывается пустой, то и его удаляем
@@ -263,15 +327,14 @@ let renderTrees = {
                     currentElem = this.currentElem.parentNode.parentNode.parentNode;
                     this.currentElem.parentNode.parentNode.parentNode.innerHTML = this.getHtmlBranch(tree);
 
-                    // Если скилов не оставалось, значи и детей не остовалось и текущим элемент - родитель
+                    // Если скилов не оставалось, значит и детей не оставалось и текущий элемент - родитель
                     if (isSkills) {
                         this.currentElem = currentElem.childNodes[0];
 
                     // В противном случае текущий элемент - следующий в списке, или предыдущий, если удаленный элемент был последним
                     } else {
-                        let x = currentElem.childNodes[1].childNodes.length;
-                        let y = (i === x) ? i - 1 : i;
-                        this.currentElem = currentElem.childNodes[1].childNodes[y].childNodes[0];
+                        let j = (i === currentElem.childNodes[1].childNodes.length) ? i - 1 : i;
+                        this.currentElem = currentElem.childNodes[1].childNodes[j].childNodes[0];
                     }
                 }
                 break;
@@ -324,7 +387,7 @@ let renderTrees = {
             let pendingClick = 0;
             let line = this;
             // Если еще не определен id то берем номер количество вызовов .start
-            let index = (renderTrees.id) ? renderTrees.id : renderTrees.number - 1;
+            let index = (renderTrees.id !== null) ? renderTrees.id : renderTrees.number - 1;
 
             let container = $(renderTrees.container[index]);
 
@@ -365,7 +428,6 @@ let renderTrees = {
 
                     // При двойном клике
                     case 2:
-
                         // Показываем блок изменений
                         renderTrees.blockChanges.show();
                         break;
@@ -406,16 +468,18 @@ let renderTrees = {
     blockChanges: {
 
         // Необходимые переменные
-        elem: null,
-        input: null,
-        saveButton: null,
-        addButton: null,
-        delButton: null,
+        elem: [],
+        input: [],
+        saveButton: [],
+        addButton: [],
+        delButton: [],
         focus: false,
+
+        closeAll: function () { for (let elem of this.elem){ elem.hide(); } },
 
         // Закрывает блок
         close: function (delayFocus) {
-            this.elem.hide();
+            this.closeAll();
             // Задержка потому что элемент может рендерится с задержкой,
             // и если мы не задержим функцию, то фокус встанет на уже не существующий элемент
             setTimeout(function () {
@@ -427,13 +491,15 @@ let renderTrees = {
         // Показывает блок
         show: function () {
 
+            this.closeAll();
+
             let thisElem = $(renderTrees.currentElem);
 
             // Показать
-            this.elem.show();
+            this.elem[renderTrees.id].show();
 
             // Переменные элемента
-            let top = (thisElem.offset().top - $('#tree_' + (renderTrees.id + 1)).offset().top) + (thisElem.height() - this.elem.height())/2;
+            let top = (thisElem.offset().top - $('#tree_' + (renderTrees.id + 1)).offset().top) + (thisElem.height() - this.elem[renderTrees.id].height())/2;
             let left = thisElem.offset().left;
 
             // Переменные инпута
@@ -445,16 +511,16 @@ let renderTrees = {
             };
 
             // Действия над блоком изменений
-            this.elem.css({
+            this.elem[renderTrees.id].css({
                 'top': top,
                 'left': left - 2 // - 2 позволяет скрыть outline элемента находящегося под блоком изменений
             });
 
             // Действия над инпутом
-            this.input.val(input.text);
-            this.input.select();
+            this.input[renderTrees.id].val(input.text);
+            this.input[renderTrees.id].select();
             this.focus = true;
-            this.input.css({
+            this.input[renderTrees.id].css({
                 'width': input.width,
                 'fontFamily' : input.fontFamily,
                 'fontSize' : input.fontSize,
@@ -467,7 +533,7 @@ let renderTrees = {
             let names = renderTrees.getNames();
             let elemText = names.elem;
             let parentText = names.parent;
-            let inputValue = this.input.val();
+            let inputValue = this.input[renderTrees.id].val();
 
             // Только если значение инпута отличается от первоначального текста и непустое значение
             if (inputValue !== elemText && inputValue){
@@ -484,7 +550,7 @@ let renderTrees = {
             let names = renderTrees.getNames();
             let elemText = names.elem;
             let parentText = names.parent;
-            let inputValue = this.input.val();
+            let inputValue = this.input[renderTrees.id].val();
 
             // Все операции добавления
             function add() {
@@ -540,30 +606,50 @@ let renderTrees = {
 
         },
 
+        wasNoElem: function (index) {
+            for (let i = 0; i < this.elem.length; ++i){
+                // console.log(this.elem[i].length);
+                if (parseInt(this.elem[i].attr('id').match(/\d+/)[0]) === index) {
+                    return false;
+                }
+            }
+            return true;
+        },
+
         // Инициализация переменных и событий
         init: function () {
 
             let blockChanges = this;
+            let index = (renderTrees.id !== null) ? renderTrees.id + 1 : renderTrees.number;
 
-            this.elem = $('#change_' + renderTrees.number);
-            this.input = $('#change__field_' + renderTrees.number);
-            this.saveButton = $('#change__save_' + renderTrees.number);
-            this.addButton = $('#change__add_' + renderTrees.number);
-            this.delButton = $('#change__del_' + renderTrees.number);
+            console.log(this.elem);
+            if (this.wasNoElem(index)) {
+                this.elem.push($(`#change_${index}`));
+                this.input.push($(`#change__field_${index}`));
+                this.saveButton.push($(`#change__save_${index}`));
+                this.addButton.push($(`#change__add_${index}`));
+                this.delButton.push($(`#change__del_${index}`));
+            } else {
+                this.elem[index - 1] = ($(`#change_${index}`));
+                this.input[index - 1] = ($(`#change__field_${index}`));
+                this.saveButton[index - 1] = ($(`#change__save_${index}`));
+                this.addButton[index - 1] = ($(`#change__add_${index}`));
+                this.delButton[index - 1] = ($(`#change__del_${index}`));
+            }
 
             // Функции нажатия на кнопки
-            this.saveButton.click(function () {
+            this.saveButton[index - 1].click(function () {
                 blockChanges.save();
             });
-            this.addButton.click(function () {
+            this.addButton[index - 1].click(function () {
                 blockChanges.add();
             });
-            this.delButton.click(function () {
+            this.delButton[index - 1].click(function () {
                 blockChanges.del();
             });
 
             // При нажатии enter происходит функция сохранения
-            this.input.keyup(function (e) {
+            this.input[index - 1].keyup(function (e) {
                     switch (e.keyCode) {
                         // enter
                         case 13:
@@ -574,6 +660,7 @@ let renderTrees = {
             });
 
             // Если esc блок изменений закрывается
+            $(window).off('keyup'); // Во избежание вызова несколько раз данной функции
             $(window).keyup(function (e) {
                 switch (e.keyCode) {
                     // esc
@@ -583,6 +670,7 @@ let renderTrees = {
                 }
             });
 
+
         },
 
         // Создает Html код блока изменений
@@ -590,8 +678,8 @@ let renderTrees = {
             return `<div id="change_${renderTrees.number}" class="change">
                         <input id="change__field_${renderTrees.number}" class="change__field" value=""/>
                         <button id="change__save_${renderTrees.number}" title="Сохраняет название элементу" class="change__button change__save">Сохранить</button>
-                        <button id="change__add_${renderTrees.number}" title="Добавляет подэлемент. Название берет из значения текста" class="change__button change__add">Добавить подстроку</button>
-                        <button id="change__del_${renderTrees.number}" title="Удаляет текущий элемент. Значение текста никак не влияет" class="change__button change__del">Удалить</button>
+                        <button id="change__add_${renderTrees.number}" title="Добавляет подэлемент. Название берет из значения инпута" class="change__button change__add">Добавить подстроку</button>
+                        <button id="change__del_${renderTrees.number}" title="Удаляет текущий элемент. Значение инпута никак не влияет" class="change__button change__del">Удалить</button>
                         </div>`;
         },
 
@@ -600,8 +688,8 @@ let renderTrees = {
     // Возвращает текст родителя и самого элемента
     getNames: function () {
         return {
-            parent: this.currentElem.parentNode.parentNode.parentNode.childNodes[0].innerText,
             elem: this.currentElem.textContent,
+            parent: $(this.currentElem).parent().parent().parent().children('.line').text() || this.currentElem.textContent,
         };
     },
 
@@ -640,8 +728,8 @@ let renderTrees = {
 
     // Создает елементы HTML и инициализирует переменные
     render: function () {
-        let index = (this.id) ? this.id : this.number - 1;
-        this.container[index].innerHTML = `<div class="tree-block"><ul id="tree_${this.number}" class="tree">${this.getHtml(this.tree[index])}</ul>${this.blockChanges.render()}</div>`;
+        let index = (this.id !== null) ? this.id : this.number - 1;
+        this.container[index].innerHTML = `<div class="tree-block"><ul id="tree_${index + 1}" class="tree">${this.getHtml(this.tree[index])}</ul>${this.blockChanges.render()}</div>`;
         this.init();
     },
 
@@ -650,4 +738,5 @@ let renderTrees = {
 
 
 renderTrees.start(tree,"container_1");
-// renderTrees.start(tree1,"container_2");
+renderTrees.start(tree1,"container_2");
+renderTrees.start(tree2,"container_3");
