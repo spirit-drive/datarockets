@@ -9,7 +9,7 @@ let renderTrees = {
     // Принимает начальные данные, запускает все функции
     start (objTree,idContainer) {
 
-        // Проверка на валидность данных. Если не проводит проверку, завершаем функцию
+        // Проверка на валидность данных. Если не проходит проверку, завершаем функцию
         let check = this.inputValidation(objTree,idContainer);
         if (!check) { return; }
 
@@ -493,7 +493,7 @@ let renderTrees = {
             });
 
             // Если esc блок изменений закрывается
-            $(window).off('keyup.blockChange'); // Во избежание вызова несколько раз данной функции
+            $(window).off('keyup.blockChange'); // Во избежание вызова данной функции несколько раз
             $(window).on('keyup.blockChange',(e) => {
                 switch (e.keyCode) {
                     // esc
@@ -525,7 +525,7 @@ let renderTrees = {
 
             // При кликах по самому блоку изменений, не срабатывает событие, объвленное выше
             elem.off('click.block');
-            elem.on('click.block',function (e) {
+            elem.on('click.block',(e)=>{
                 e.stopPropagation();
             });
 
@@ -576,7 +576,7 @@ let renderTrees = {
         return res;
     },
 
-    // Инициализируем переменные и события
+    // Инициализирует все переменные и события
     init () {
 
         // Инициализируем элементы
