@@ -18,8 +18,8 @@ let renderTrees = {
 
         // Если в локальной истории что-то есть, то берем данные оттуда
         let localStorageTree = localStorage.getItem(`tree_${this.count}`);
-        // this.arrayTreesObj.push((localStorageTree) ? JSON.parse(localStorageTree) : objTree);
-        this.arrayTreesObj.push(objTree);
+        this.arrayTreesObj.push((localStorageTree) ? JSON.parse(localStorageTree) : objTree);
+        // this.arrayTreesObj.push(objTree);
 
         // Присваиваем контейнер и рендерим элементы по объекту
         this.container.push(check);
@@ -162,7 +162,7 @@ let renderTrees = {
         // searchNewName - новый параметр
         // searchParent - родитель, дабы исключить изменение параметра в другой ветке. Не слишком надежное решение, можно усовершенствовать, но в рамках учебного задания, достаточно
 
-        // Останавливаем функцию, если нет какого-то из данных
+        // Останавливаем функцию, если нет какого-то из обязательных данных
         if (!searchFunc || !searchTreeObj || !searchName || !searchParent){
             console.log('Недостаточно данных. Функция "search" остановлена');
             return;
@@ -176,7 +176,7 @@ let renderTrees = {
         }
 
         // Бежим по всем элементам списка
-        for (let i = 0; searchTreeObj.skills[i]; ++i){
+        for (let i = 0; i < searchTreeObj.skills.length; ++i){
 
             // Если текст элементра и родителя соответствуют поиску, то выполнем обозначенную операцию и завершаем функцию
             if (searchTreeObj.skills[i].name === searchName && searchTreeObj.name === searchParent){
@@ -210,10 +210,10 @@ let renderTrees = {
             let container = $(renderTrees.container[index]);
 
             // Удаляем все обработчики событий что были до этого
-            container.off();
+            container.off('click.line keyup.line focus.line');
 
             // При клике
-            container.on('click','.tree-space__line',function(e) {
+            container.on('click.line','.tree-space__line',function(e) {
 
                 // Установить текущий элемент
                 renderTrees.currentElem = this;
@@ -228,7 +228,7 @@ let renderTrees = {
 
                     // При одиночном клике
                     case 1:
-                        pendingClick = setTimeout(function () {
+                        pendingClick = setTimeout(() => {
 
                             let blockChanges = renderTrees.blockChanges;
 
@@ -254,7 +254,7 @@ let renderTrees = {
             });
 
             // При нажатии клавиш на сфокусированном объекте
-            container.on('keyup','.tree-space__line',(e) => {
+            container.on('keyup.line','.tree-space__line',(e) => {
                 switch (e.keyCode){
 
                     // del
@@ -275,7 +275,7 @@ let renderTrees = {
             });
 
             // При фокусировании переменной currentElem присваиваем текущий элемент
-            container.on('focus','.tree-space__line',function () {
+            container.on('focus.line','.tree-space__line',function () {
                 renderTrees.currentElem = this;
                 renderTrees.index = $(this).parents('.tree-space__tree').attr('id').match(/\d+/g)[0] - 1;
             });
@@ -301,7 +301,7 @@ let renderTrees = {
             this.closeAll();
             // Задержка потому что элемент может рендерится с задержкой,
             // и если мы не задержим функцию, то фокус встанет на уже не существующий элемент
-            setTimeout(function () {
+            setTimeout(() => {
                 renderTrees.currentElem.focus();
                 // По умолчанию 100 мс это позволяет при при коротком нажатии не открывать блок редактирования, либо длинном нажатии enter открывать повторно
             },(delayFocus) ? delayFocus : 100);
@@ -379,12 +379,12 @@ let renderTrees = {
             if (inputValue === elemText){
                 if (confirm(`Вы хотите добавить строку с тем же названием, что и у родителя? "${elemText}"`)){
                     // Небольшая задержка для комфортного наблюдения
-                    setTimeout(function () {
+                    setTimeout(() => {
                         add();
                     },300);
                 } else {
                     // Задержка для исключения длительгого нажатия esc и установки фокуса на input
-                    setTimeout(function () {
+                    setTimeout(() => {
                         renderTrees.blockChanges.open();
                     },300);
                 }
@@ -407,7 +407,7 @@ let renderTrees = {
                 $(renderTrees.currentElem).parent().slideUp();
 
                 // Когда элемент скроется перерендериваем ветку
-                setTimeout(function () {
+                setTimeout(() => {
                     renderTrees.search('del',tree,elemText,parentText);
                 }, 600);
 
@@ -415,7 +415,7 @@ let renderTrees = {
                 renderTrees.blockChanges.close(600);
             } else {
                 // Задержка для исключения длительгого нажатия esc и для установки фокуса на input
-                setTimeout(function () {
+                setTimeout(() => {
                     renderTrees.blockChanges.open();
                 },300);
             }
@@ -424,8 +424,8 @@ let renderTrees = {
 
         // Принимает индекс и сравнивает его с id элемента, если уже есть такой элемент, возвращает лож.
         isNotElem (index) {
-            for (let i = 0; i < this.elem.length; ++i){
-                if (parseInt(this.elem[i].attr('id').match(/\d+/)[0]) === index) {
+            for (let elem of this.elem){
+                if (parseInt(elem.attr('id').match(/\d+/)[0]) === index) {
                     return false;
                 }
             }
@@ -452,13 +452,13 @@ let renderTrees = {
             ];
 
             if (this.isNotElem(index)) {
-                for (let i = 0; i < elements.length; ++i){
-                    elements[i].push(domElements[i]);
-                }
+                elements.forEach((elem,i)=>{
+                    elem.push(domElements[i]);
+                });
             } else {
-                for (let i = 0; i < elements.length; ++i){
-                    elements[i][index - 1] = (domElements[i]);
-                }
+                elements.forEach((elem,i)=>{
+                    elem[index - 1] = domElements[i];
+                });
             }
         },
 
@@ -493,8 +493,8 @@ let renderTrees = {
             });
 
             // Если esc блок изменений закрывается
-            $(window).off('keyup'); // Во избежание вызова несколько раз данной функции
-            $(window).keyup((e) => {
+            $(window).off('keyup.blockChange'); // Во избежание вызова несколько раз данной функции
+            $(window).on('keyup.blockChange',(e) => {
                 switch (e.keyCode) {
                     // esc
                     case 27:
@@ -502,7 +502,6 @@ let renderTrees = {
                         break;
                 }
             });
-
 
         },
 
@@ -542,9 +541,9 @@ let renderTrees = {
         // Если есть skills, то создаем обертку ul и бежим по внутренностям
         if (skills) {
             res += `<ul class="tree-space__list">`;
-            for (let i = 0; objTree.skills[i]; ++i) {
-                res += this.getHtml(objTree.skills[i]);
-            }
+            objTree.skills.forEach((skill) => {
+                res += this.getHtml(skill);
+            });
             res += '</ul>';
         }
         res += '</li>';

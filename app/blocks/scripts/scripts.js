@@ -87,9 +87,6 @@ let tree = {
                             name: "Data structures",
                             skills: [
                                 {
-                                    name: "Primitives and limitations"
-                                },
-                                {
                                     name: "Object"
                                 }
                             ]
@@ -119,9 +116,6 @@ let tree = {
                     name: "Frameworks & libraries",
                     skills: [
                         {
-                            name: "React"
-                        },
-                        {
                             name: "jQuery"
                         }
                     ]
@@ -139,96 +133,294 @@ let tree = {
     ]
 };
 let tree1 = {
-    name: "Stylesheets",
+    name: "Мои увлечения",
     skills: [
         {
-            name: 'class'
-        },
-        {
-            name: "Positioning",
+            name: 'Спорт',
             skills: [
                 {
-                    name: "static, relative and absolute, fixed, sticky"
-                }
-            ]
+                    name: 'Турники',
+                },
+                {
+                    name: 'Брусья',
+                },
+                {
+                    name: 'Бег',
+                },
+                {
+                    name: 'Фитнес',
+                },
+            ],
         },
         {
-            name: "Understanding of box model"
+            name: 'Книги',
+            skills: [
+                {
+                    name: 'Психология',
+                    skills: [
+                        {
+                            name: 'Мотивация',
+                        },
+                        {
+                            name: 'Сила воли',
+                        },
+                        {
+                            name: 'Концентрация',
+                        },
+                        {
+                            name: 'Защита от манипуляций',
+                        },
+                        {
+                            name: 'Психология отношений',
+                        },
+                    ]
+                },
+                {
+                    name: 'Бизнес-литература',
+                    skills: [
+                        {
+                            name: 'Маркетинг',
+                        },
+                        {
+                            name: 'Бизнес модели',
+                        },
+                        {
+                            name: 'Истории брендов',
+                        },
+                        {
+                            name: 'Биографии',
+                        },
+                    ]
+                },
+            ],
         },
         {
-            name: "Understanding floating"
+            name: 'Фотография',
+            skills: [
+                {
+                    name: 'Портретная съемка',
+                },
+                {
+                    name: 'Съемка на природе',
+                },
+            ],
         },
         {
-            name: 'FlexBox'
-        },
-        {
-            name: 'Animations'
+            name: 'Программирование',
+            skills: [
+                {
+                    name: 'JavaScript',
+                },
+                {
+                    name: 'Верстка',
+                },
+            ],
         },
     ]
 };
 let tree2 = {
-    name: "JavaScript",
+    name: "Книги, которые я прочел",
     skills: [
         {
-            name: "Core",
+            name: "Бизнес-литература",
             skills: [
                 {
-                    name: "DOM"
-                },
-                {
-                    name: "Events"
-                },
-                {
-                    name: "Data structures",
+                    name: "Любимые книги",
                     skills: [
                         {
-                            name: "Primitives and limitations"
+                            name: "Эшли Вэнс",
+                            skills: [
+                                {
+                                    name: "Илон Маск: Tesla, SpaceX и дорога в будущее"
+                                },
+                            ]
+
                         },
                         {
-                            name: "Object"
+                            name: "Джимм Коллинз",
+                            skills: [
+                                {
+                                    name: "От хорошего к Великому"
+                                },
+                                {
+                                    name: "Великие по собственному выбору"
+                                }
+                            ]
+
+                        },
+                        {
+                            name: "Дональд Трамп",
+                            skills: [
+                                {
+                                    name: "Мысли по-крупному и не тормози"
+                                },
+                            ]
+
+                        },
+                        {
+                            name: "Ким Чан, Рене Моборн",
+                            skills: [
+                                {
+                                    name: "Стратегия голубого океана"
+                                },
+                            ]
+
+                        },
+                    ]
+                },
+                {
+                    name: "Прочие книги",
+                    skills: [
+                        {
+                            name: "Ив Пенье, Александер Остервальдер",
+                            skills: [
+                                {
+                                    name: "Построение бизнес моделей"
+                                },
+                                {
+                                    name: "Разработка ценностных предложений"
+                                }
+                            ]
+
+                        },
+                        {
+                            name: "Джей Конрад Левинсон",
+                            skills: [
+                                {
+                                    name: "Партизанский маркетинг. Простые способы..."
+                                },
+                                {
+                                    name: "Партизанский маркетинг. Добро пожаловать в маркетингомую революцию."
+                                }
+                            ]
+
+                        },
+                        {
+                            name: "Дэн Вальдшмидт",
+                            skills: [
+                                {
+                                    name: "Будь лучшей версией себя"
+                                },
+                            ]
+                        },
+                        {
+                            name: "И другие...",
+                        },
+                    ]
+
+                },
+            ]
+        },
+        {
+            name: "Психология",
+            skills: [
+                {
+                    name: "Любимые книги",
+                    skills: [
+                        {
+                            name: "Михай Чиксентмихайи",
+                            skills: [
+                                {
+                                    name: "Поток. Психология оптимального переживания"
+                                },
+                            ]
+
+                        },
+                        {
+                            name: "Роберт Чалдини",
+                            skills: [
+                                {
+                                    name: "Психология влияния"
+                                },
+                            ]
+
+                        },
+                        {
+                            name: "Люси Джо Палладино",
+                            skills: [
+                                {
+                                    name: "Максимальная концентрация"
+                                },
+                            ]
+
                         }
+                    ]
+                },
+                {
+                    name: "Прочие книги",
+                    skills: [
+                        {
+                            name: "Джон О'Киффи",
+                            skills: [
+                                {
+                                    name: "Нешаблонное мышление"
+                                },
+                            ]
+
+                        },
+                        {
+                            name: "Авинаш Диксит и другие",
+                            skills: [
+                                {
+                                    name: "Теория игр. Искусство стратегического мышления"
+                                },
+                            ]
+
+                        },
+                        {
+                            name: "Дениэл Пинк",
+                            skills: [
+                                {
+                                    name: "Драйв. Или что на самом деле нас мотивирует"
+                                },
+                            ]
+                        },
+                        {
+                            name: "И другие...",
+                        },
+                    ]
+
+                },
+            ]
+        },
+        {
+            name: "Художественная литература",
+            skills: [
+                {
+                    name: "Любимые книги",
+                    skills: [
+                        {
+                            name: "Анджей Сапковский",
+                            skills: [
+                                {
+                                    name: "Ведьмак"
+                                },
+                            ]
+
+                        },
                     ]
                 },
             ]
         },
         {
-            name: "Approaches",
+            name: "История",
             skills: [
                 {
-                    name: "OOP",
+                    name: "Любимые книги",
                     skills: [
                         {
-                            name: "class"
+                            name: "Юваль Ной Харари",
+                            skills: [
+                                {
+                                    name: "Sapiens. Краткая история человечества"
+                                },
+                            ]
+
                         },
-                        {
-                            name: "Prototypes"
-                        }
                     ]
                 },
-                {
-                    name: "Asynchronous programming"
-                }
             ]
         },
-        {
-            name: "Frameworks & libraries",
-            skills: [
-                {
-                    name: "React"
-                },
-                {
-                    name: "jQuery"
-                }
-            ]
-        },
-        {
-            name: 'Additionally',
-            skills: [
-                {
-                    name: 'Gulp'
-                }
-            ]
-        }
     ]
 };
 
