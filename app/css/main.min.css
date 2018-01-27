@@ -7,8 +7,8 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    padding-left: 8px;
+    padding: 0 8px;
+    white-space: nowrap;
     background: #dadada; }
     .tree-space__change * {
       height: 30px;
