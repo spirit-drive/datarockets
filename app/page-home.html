@@ -17,17 +17,50 @@
     <link rel="stylesheet" href="css/main-screen.min.css"/>
   </head>
   <body class="home">
-    <main>Привет
-      <div class="vewgre">srertrentr</div>
-      <div class="vewgre">srertrentr</div>
-      <div class="vewgre">srertrentr</div>
+    <main>
+      <div class="container-for-info">
+        <div class="container-for-info__face"></div>
+        <h1 class="container-for-info__title">Звягин Игорь</h1>
+        <p class="container-for-info__subtitle">16.06.1993</p>
+        <p>Спасибо большое! Это было очень интересное задание. Правда выполнено не на react, но благодаря ему, я начинаю понимать удобства react.</p>
+        <p>Управление интуитивнопонятное:</p>
+        <p>Жирным шрифтом обозначены узлы, которые содержат подстроки.</p>
+        <p><span class="bright">space</span> - открывает/закрывает подстроки.</p>
+        <p><span class="bright">del</span> - удаляет данный узел.</p>
+        <p><span class="bright">enter</span> - и двойной клик открывает окно редактирования.</p>
+        <p><span class="bright">esc</span> - закрывает окно редактирования.</p>
+        <p><span class="bright">enter</span> при открытом окне редактирования сохраняет результат и закрывает окно редактирования.</p>
+        <p><span class="bright">Кнопка "Сохранить"</span> - сохраняет данному узлу значение, которое находится в окне редактирования.</p>
+        <p><span class="bright">Кнопка "Удалить"</span> - удаляет данный узел и значение окна редактирования никак не влияет.</p>
+        <p><span class="bright">Кнопка "Добавить подстроку"</span> - добавит подстроку со значнием окна редактирования.</p>
+        <p>Есть есть один момент. Допустим Вы хотите сделать несколько подстрок у данного элемента.</p>
+        <p>Вы можете использовать длительное нажатие<span class="bright">  enter</span>, чтобы открыть окно редактирования повторно. Либо короткое нажатие, чтобы не открывать окно.</p>
+        <p>Попробуйте и почувствуете.</p>
+        <p class="bright">Используются следующие классы:</p>
+        <ol class="container-for-info__list">
+          <li><span class="bright">tree-space</span> - контейнер для дерева</li>
+          <li><span class="bright">tree-space__line</span> - пункт в дереве</li>
+          <li><span class="bright">tree-space__list</span> - список пунктов</li>
+          <li><span class="bright">tree-space__parent</span> - пункт, содержащий подпункты</li>
+          <li><span class="bright">tree-space__change</span> - блок редактирования</li>
+          <li><span class="bright">change__field</span> - поле блока редактирования</li>
+          <li><span class="bright">change__button</span> - копки блока редактирования. Не используются в стилях, но создан этот класс именно для удобного узменения стилей кнопок</li>
+          <li><span class="bright">change__save</span> - класс кнопки сохранения</li>
+          <li><span class="bright">change__add</span> - класс кнопки добавления подстроки</li>
+          <li><span class="bright">change__del</span> - класс кнопки удаления</li>
+        </ol>
+        <p class="bright">Используются следующие id:</p>
+        <ol class="container-for-info__list">
+          <li><span class="bright">tree-space__change_№</span> - вместо "№" - цифра. Идентификатор блока изменений</li>
+          <li><span class="bright">change__field_№</span> - идентификаторы соответствующих элементов блока изменений</li>
+          <li><span class="bright">change__save_№</span> - идентификаторы соответствующих элементов блока изменений</li>
+          <li><span class="bright">change__add_№</span> - идентификаторы соответствующих элементов блока изменений</li>
+          <li><span class="bright">change__del_№</span> - идентификаторы соответствующих элементов блока изменений</li>
+        </ol>
+      </div>
       <div id="container_1"></div>
       <div id="container_2"></div>
       <div id="container_3"></div>
-      <input>
-      <input>
-      <input>
-      <input>
     </main>
   </body>
   <link rel="stylesheet" href="css/main.min.css"/>

@@ -91,18 +91,6 @@ gulp.task('css-libs',function () {
         .pipe(gulp.dest('app/css'));
 });
 
-// Стилус, надо тестировать
-gulp.task('stylus',function () {
-    return gulp.src([
-        'app/stylus/**/*.styl',
-        'app/blocks/**/*.styl'
-    ])
-        .pipe(concat('main.min.css'))
-        .pipe(stylus())
-        .pipe(autoprefixer(['last 15 versions']))
-        .pipe(gulp.dest('app/css'));
-});
-
 // Все стили
 gulp.task('sass', [ 'sass-libs','sass-mylibs','sass-main-screen','sass-blocks','sass-sass'], function() {
     return gulp.src([
@@ -203,10 +191,9 @@ gulp.task('svg',function () {
 
 // Отслеживание
 gulp.task('watch', ['sass','pug', 'js','css-libs', 'browser-sync'], function() {
-    // gulp.watch(['app/stylus/**/*.styl','app/blocks/**/*.styl'],['stylus']);
-    gulp.watch(['app/sass/**/*.+(scss|sass)','app/blocks/**/*.+(scss|sass)'],['sass']);
+    gulp.watch(['app/mylibs/**/*.+(scss|sass)','app/sass/**/*.+(scss|sass)','app/blocks/**/*.+(scss|sass)'],['sass']);
     gulp.watch(['app/pug/**/*.+(pug|jade)','app/blocks/**/*.+(pug|jade)'],['pug']);
-    gulp.watch(['app/libs/**/*.js','app/blocks/**/*.js'], ['js']);
+    gulp.watch(['app/libs/**/*.js','app/mylibs/**/*.js','app/blocks/**/*.js'], ['js']);
     gulp.watch('libs/**/*.css', ['css-libs']);
     gulp.watch('app/*.html', browserSync.reload);
 });

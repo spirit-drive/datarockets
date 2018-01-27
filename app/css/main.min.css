@@ -1,43 +1,41 @@
-ul,
-ol {
-  margin-left: 50px; }
-
-.tree-block {
+.tree-space {
   position: relative; }
-
-.change {
-  display: none;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  padding-left: 8px;
-  background: #dadada; }
-  .change * {
-    height: 30px;
-    vertical-align: top; }
-  .change__field {
+  .tree-space__list, .tree-space__tree {
+    margin-left: 50px; }
+  .tree-space__change {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding-left: 8px;
+    background: #dadada; }
+    .tree-space__change * {
+      height: 30px;
+      vertical-align: top; }
+  .tree-space__line {
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    -webkit-transition: all .1s;
+    -o-transition: all .1s;
+    transition: all .1s;
     border: none;
-    outline: none;
-    background: #dadada; }
+    background: none; }
+    .tree-space__line:hover {
+      background: #eeeeee; }
+    .tree-space__line:focus {
+      background: #dadada; }
+    .tree-space__line:active {
+      color: #fff; }
+  .tree-space__parent {
+    font-size: 18px;
+    font-family: "OpenSans", sans-serif; }
 
-.line {
-  width: 100%;
-  text-align: left;
-  cursor: pointer;
-  -webkit-transition: all .1s;
-  -o-transition: all .1s;
-  transition: all .1s;
+.change__field {
   border: none;
-  background: none; }
-  .line:hover, .line:focus {
-    background: #dadada; }
-  .line:active {
-    color: #fff; }
-
-.parent {
-  font-size: 18px;
-  font-family: "OpenSans", sans-serif; }
+  outline: none;
+  background: #dadada; }
 
 a {
   color: inherit;
@@ -59,4 +57,36 @@ button {
 input,
 textarea {
   font-size: inherit; }
+
+main {
+  margin: 30px 50px; }
+
+p {
+  margin: 10px 0 10px; }
+
+.bright {
+  font-family: "OpenSans", sans-serif; }
+
+.container-for-info {
+  margin-bottom: 30px; }
+  .container-for-info__face {
+    float: right;
+    width: 400px;
+    height: 400px;
+    -webkit-border-radius: 50%;
+            border-radius: 50%;
+    background: url("../img/face.jpg") no-repeat center;
+    -webkit-background-size: 100% auto;
+            background-size: 100% auto; }
+  .container-for-info__title {
+    font-size: 36px;
+    font-family: "OpenSans", sans-serif; }
+  .container-for-info__subtitle {
+    margin-bottom: 60px;
+    font-size: 28px;
+    font-family: "OpenSans", sans-serif; }
+  .container-for-info li {
+    margin-bottom: 3px; }
+  .container-for-info__list {
+    margin-left: 50px; }
 

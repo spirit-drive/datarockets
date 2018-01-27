@@ -1,41 +1,46 @@
 @import "../sass/_vars&mixin"
 
-ul,
-ol
-  margin-left: 50px
-
-.tree-block
+.tree-space
   position: relative
+  &__list,
+  &__tree
+    margin-left: 50px
+
+
+
+  &__change
+    display: none
+    position: absolute
+    top: 0
+    left: 0
+    width: 100%
+    padding-left: 8px
+    background: $color_1
+    *
+      height: 30px
+      vertical-align: top
+
+  &__line
+    width: 100%
+    text-align: left
+    cursor: pointer
+    transition: all .1s
+    border: none
+    background: none
+    &:hover
+      background: $color_3
+    &:focus
+      background: $color_1
+    &:active
+      color: $color_2
+
+  &__parent
+    font-size: 18px
+    font-family: $default-font
 
 .change
-  display: none
-  position: absolute
-  top: 0
-  left: 0
-  width: 100%
-  padding-left: 8px
-  background: $color_1
-  *
-    height: 30px
-    vertical-align: top
   &__field
     border: none
     outline: none
     background: $color_1
 
-.line
-  width: 100%
-  text-align: left
-  cursor: pointer
-  transition: all .1s
-  border: none
-  background: none
-  &:hover,
-  &:focus
-    background: $color_1
-  &:active
-    color: $color_2
-
-.parent
-  font-size: 18px
-  font-family: $default-font

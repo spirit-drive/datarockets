@@ -4,15 +4,93 @@ doctype html
 html(lang='ru')
     +head("Datarockets cool task")
     body.home
-        main Привет
-            .vewgre srertrentr
-            .vewgre srertrentr
-            .vewgre srertrentr
+        main
+            .container-for-info
+                .container-for-info__face
+                h1.container-for-info__title Звягин Игорь
+                p.container-for-info__subtitle 16.06.1993
+                p Спасибо большое! Это было очень интересное задание. Правда выполнено не на react, но благодаря ему, я начинаю понимать удобства react.
+                p Управление интуитивнопонятное:
+                p Жирным шрифтом обозначены узлы, которые содержат подстроки.
+                p
+                    span.bright space
+                    |  - открывает/закрывает подстроки.
+                p
+                    span.bright del
+                    |  - удаляет данный узел.
+                p
+                    span.bright enter
+                    |  - и двойной клик открывает окно редактирования.
+                p
+                    span.bright esc
+                    |  - закрывает окно редактирования.
+                p
+                    span.bright enter
+                    |  при открытом окне редактирования сохраняет результат и закрывает окно редактирования.
+                p
+                    span.bright Кнопка "Сохранить"
+                    |  - сохраняет данному узлу значение, которое находится в окне редактирования.
+                p
+                    span.bright Кнопка "Удалить"
+                    |  - удаляет данный узел и значение окна редактирования никак не влияет.
+                p
+                    span.bright Кнопка "Добавить подстроку"
+                    |  - добавит подстроку со значнием окна редактирования.
+                p Есть есть один момент. Допустим Вы хотите сделать несколько подстрок у данного элемента.
+                p Вы можете использовать длительное нажатие
+                    span.bright   enter
+                    |, чтобы открыть окно редактирования повторно. Либо короткое нажатие, чтобы не открывать окно.
+                p Попробуйте и почувствуете.
+                p.bright Используются следующие классы:
+                ol.container-for-info__list
+                    li
+                        span.bright tree-space
+                        |  - контейнер для дерева
+                    li
+                        span.bright tree-space__line
+                        |  - пункт в дереве
+                    li
+                        span.bright tree-space__list
+                        |  - список пунктов
+                    li
+                        span.bright tree-space__parent
+                        |  - пункт, содержащий подпункты
+                    li
+                        span.bright tree-space__change
+                        |  - блок редактирования
+                    li
+                        span.bright change__field
+                        |  - поле блока редактирования
+                    li
+                        span.bright change__button
+                        |  - копки блока редактирования. Не используются в стилях, но создан этот класс именно для удобного узменения стилей кнопок
+                    li
+                        span.bright change__save
+                        |  - класс кнопки сохранения
+                    li
+                        span.bright change__add
+                        |  - класс кнопки добавления подстроки
+                    li
+                        span.bright change__del
+                        |  - класс кнопки удаления
+                p.bright Используются следующие id:
+                ol.container-for-info__list
+                    li
+                        span.bright tree-space__change_№
+                        |  - вместо "№" - цифра. Идентификатор блока изменений
+                    li
+                        span.bright change__field_№
+                        |  - идентификаторы соответствующих элементов блока изменений
+                    li
+                        span.bright change__save_№
+                        |  - идентификаторы соответствующих элементов блока изменений
+                    li
+                        span.bright change__add_№
+                        |  - идентификаторы соответствующих элементов блока изменений
+                    li
+                        span.bright change__del_№
+                        |  - идентификаторы соответствующих элементов блока изменений
             #container_1
             #container_2
             #container_3
-            input
-            input
-            input
-            input
     +foot
