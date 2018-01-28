@@ -244,7 +244,7 @@ let renderTrees = {
             });
 
             // При нажатии клавиш на сфокусированном объекте
-            container.on('keyup.line','.tree-space__line',(e) => {
+            container.on('keyup.line','.tree-space__line', e => {
                 switch (e.keyCode){
 
                     // del
@@ -267,7 +267,7 @@ let renderTrees = {
             // При фокусировании переменной currentElem присваиваем текущий элемент
             container.on('focus.line','.tree-space__line',function () {
                 renderTrees.currentElem = this;
-                renderTrees.index = $(this).parents('.tree-space__tree').attr('id').match(/\d+/g)[0] - 1;
+                renderTrees.index = $(this).parents('.tree-space__tree').attr('id').match(/\d+/)[0] - 1;
             });
         },
     },
@@ -479,7 +479,7 @@ let renderTrees = {
             });
 
             // При нажатии enter вызывается функция сохранения
-            this.input[index - 1].keyup((e) => {
+            this.input[index - 1].keyup(e => {
                 switch (e.keyCode) {
                     // enter
                     case 13:
@@ -490,13 +490,13 @@ let renderTrees = {
             });
 
             // При кликах по самому блоку изменений, не срабатывает событие закрытия блока изменений, объявленное ниже
-            this.elem[index - 1].click((e) => {
+            this.elem[index - 1].click(e => {
                 e.stopPropagation();
             });
 
             // Если esc блок изменений закрывается
             $(window).off('keyup.blockChange'); // Во избежание навешивания обработчика несколько раз
-            $(window).on('keyup.blockChange',(e) => {
+            $(window).on('keyup.blockChange',e => {
                 switch (e.keyCode) {
                     // esc
                     case 27:
@@ -507,7 +507,7 @@ let renderTrees = {
 
             // Если нажать в любое место окна, закрывается блок изменений
             $(window).off('click.window-block'); // Во избежание навешивания обработчика несколько раз
-            $(window).on('click.window-block',(e) => {
+            $(window).on('click.window-block',e => {
                 // При втором клике обнаружит, что уже есть отложенный клик, отменит действие одинарного клика и выполнит функции двойного клика
                 if (pendingClick) {
                     clearTimeout(pendingClick);
@@ -562,7 +562,7 @@ let renderTrees = {
         // Если есть skills, то создаем обертку ul и бежим по внутренностям
         if (skills) {
             res += `<ul class="tree-space__list">`;
-            objTree.skills.forEach((skill) => {
+            objTree.skills.forEach(skill => {
                 res += this.getHtml(skill);
             });
             res += '</ul>';
