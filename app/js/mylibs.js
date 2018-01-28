@@ -54,7 +54,7 @@ let renderTrees = {
         // operationsNewName - новое имя
         // operationsIndex - индекс нужного элемента в массиве
 
-        // Останавливаем функцию, если нет какого-то из обязательных данных
+        // Останавливаем функцию, если нет обязательных данных
         if (!operation || !operationsTreeObj){
             console.log('Недостаточно данных. Функция "operations" остановлена');
             return;
@@ -161,13 +161,13 @@ let renderTrees = {
         // searchNewName - новый параметр
         // searchParent - родитель, дабы исключить изменение параметра в другой ветке. Не слишком надежное решение, можно усовершенствовать, но в рамках учебного задания, достаточно
 
-        // Останавливаем функцию, если нет какого-то из обязательных данных
+        // Останавливаем функцию, если нет обязательных данных
         if (!searchFunc || !searchTreeObj || !searchName){
             console.log('Недостаточно данных. Функция "search" остановлена');
             return;
         }
 
-        // Если текст родителя отсутствует, значит корневой элемент
+        // Если текст родителя отсутствует, значит это корневой элемент
         if (!searchParent && searchTreeObj.name === searchName){
             // Корневому элементу особые функции. Последний аргумент не передается
             this.operations(searchFunc,searchTreeObj,searchNewName);
@@ -177,14 +177,14 @@ let renderTrees = {
         // Бежим по всем элементам списка
         for (let i = 0; i < searchTreeObj.skills.length; ++i){
 
-            // Если текст элементра и родителя соответствуют поиску, то выполнем обозначенную операцию и завершаем функцию
+            // Если текст элеменра и родителя соответствуют поиску, то выполнем обозначенную операцию и завершаем функцию
             if (searchTreeObj.skills[i].name === searchName && searchTreeObj.name === searchParent){
 
                 this.operations(searchFunc,searchTreeObj,searchNewName,i);
                 return;
             }
 
-            // Если есть подветка, ищем в подветке
+            // Если функция еще не нашла результат и есть подветка, ищем в подветке
             if (searchTreeObj.skills[i].skills){
                 this.search(searchFunc,searchTreeObj.skills[i],searchName,searchParent,searchNewName);
             }
@@ -231,7 +231,7 @@ let renderTrees = {
 
                             let blockChanges = renderTrees.blockChanges;
 
-                            // Если элемент на блоке изменений, то при клике на другой элемент закрываем блок изменений
+                            // Если фокус на блоке изменений, то при клике на другой элемент закрываем блок изменений
                             // В противном случае скрываем подсписок у нажатого элемента
                             if (blockChanges.focus){
                                 blockChanges.focus = false;
@@ -291,14 +291,15 @@ let renderTrees = {
         delButton: [],
         focus: false,
 
+        // Пробегет по всему массиву, содержащему блоки изменений для каждого дерева и закрывает эти блоки
         closeAll () { for (let elem of this.elem){ elem.hide(); } },
 
-        // Закрывает все блоки
+        // Стандартная функция закрытия блока изменений
         close (delayFocus) {
 
             this.closeAll();
             // Задержка потому что элемент может рендерится с задержкой,
-            // и если мы не задержим функцию, то фокус встанет на уже не существующий элемент
+            // и если мы не задержим функцию, то фокус может встать на уже не существующий элемент
             setTimeout(() => {
                 renderTrees.currentElem.focus();
                 // По умолчанию 100 мс это позволяет при при коротком нажатии не открывать блок редактирования, либо длинном нажатии enter открывать повторно
@@ -307,13 +308,12 @@ let renderTrees = {
 
         // Показывает блок
         open () {
-
+            // Закрыть все блоки
             this.closeAll();
+            // Показать нужный блок
+            this.elem[renderTrees.index].show();
 
             let currentElem = $(renderTrees.currentElem);
-
-            // Показать
-            this.elem[renderTrees.index].show();
 
             // Переменные элемента
             let top = currentElem.position().top + (currentElem.height() - this.elem[renderTrees.index].height())/2;
@@ -351,12 +351,12 @@ let renderTrees = {
             let parentText = renderTrees.getNames().parent;
             let inputValue = this.input[renderTrees.index].val();
 
-            // Только если значение инпута отличается от первоначального текста и непустое значение
+            // Сохраняем только если значение инпута отличается от первоначального текста или непустое значение
             if (inputValue !== elemText && inputValue){
                 renderTrees.search('save',tree,elemText,parentText,inputValue);
             }
 
-            // Закрываем окно в любом случае и возвращаем фокус на выбранный элемент
+            // Закрываем окно в любом случае
             this.close();
         },
 
@@ -367,7 +367,7 @@ let renderTrees = {
             let parentText = renderTrees.getNames().parent;
             let inputValue = this.input[renderTrees.index].val();
 
-            // Все операции добавления
+            // Общая операция добавления
             let add = () => {
                 renderTrees.search('add',tree,elemText,parentText,inputValue);
                 this.close();
@@ -420,7 +420,7 @@ let renderTrees = {
 
         },
 
-        // Принимает индекс и сравнивает его с id элемента, если уже есть такой элемент, возвращает ложь, то есть: "нет таких элементов?" - ложь, т.е. есть!
+        // Принимает индекс и сравнивает его с id элемента, если нет таких элементов, возвращает true, в противном случае false
         isNotElem (index) {
             for (let elem of this.elem){
                 if (parseInt(elem.attr('id').match(/\d+/)[0]) === index) {
@@ -449,6 +449,7 @@ let renderTrees = {
                 this.delButton,
             ];
 
+            // Разные циклы в зависимости от результата проверки
             if (this.isNotElem(index)) {
                 elements.forEach((elem,i)=>{
                     elem.push(domElements[i]);
@@ -515,9 +516,7 @@ let renderTrees = {
                 switch(e.originalEvent.detail){
                     case 1:
                         pendingClick = setTimeout(() => {
-                            this.elem.forEach((elem)=>{
-                                if (elem.is(':visible')){ elem.hide();}
-                            });
+                            this.closeAll();
                         },200);
                         break;
                 }
