@@ -547,7 +547,7 @@ let renderTrees = {
         };
     },
 
-    // Возвращем тот же результут, что и getHtml, но без первой обертки <li></li>
+    // Возвращет тот же результат, что и getHtml, но без первой обертки <li></li>
     getHtmlBranch (objTree) {
         let html = this.getHtml(objTree);
         return html.slice(4,html.length - 5);
