@@ -162,13 +162,13 @@ let renderTrees = {
         // searchParent - родитель, дабы исключить изменение параметра в другой ветке. Не слишком надежное решение, можно усовершенствовать, но в рамках учебного задания, достаточно
 
         // Останавливаем функцию, если нет какого-то из обязательных данных
-        if (!searchFunc || !searchTreeObj || !searchName || !searchParent){
+        if (!searchFunc || !searchTreeObj || !searchName){
             console.log('Недостаточно данных. Функция "search" остановлена');
             return;
         }
 
-        // Если текст родителя и дитя совпадает, значит корневой элемент
-        if (searchName === searchParent && searchTreeObj.name === searchName){
+        // Если текст родителя отсутствует, значит корневой элемент
+        if (!searchParent && searchTreeObj.name === searchName){
             // Корневому элементу особые функции. Последний аргумент не передается
             this.operations(searchFunc,searchTreeObj,searchNewName);
             return;
@@ -548,7 +548,7 @@ let renderTrees = {
     getNames () {
         return {
             elem: this.currentElem.textContent,
-            parent: $(this.currentElem).parent().parent().parent().children('.tree-space__line').text() || this.currentElem.textContent,
+            parent: $(this.currentElem).parent().parent().parent().children('.tree-space__line').text(),
         };
     },
 
