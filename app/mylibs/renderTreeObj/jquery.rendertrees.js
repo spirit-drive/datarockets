@@ -466,7 +466,6 @@ let renderTrees = {
 
             let index = (renderTrees.index === null) ? renderTrees.count : renderTrees.index + 1;
             let pendingClick = 0;
-            let elem = $('.tree-space__change');
 
             // Инициализация элементов блока изменений
             this.initElements(index);
@@ -483,7 +482,7 @@ let renderTrees = {
                 this.del();
             });
 
-            // При нажатии enter происходит функция сохранения
+            // При нажатии enter вызывается функция сохранения
             this.input[index - 1].keyup((e) => {
                 switch (e.keyCode) {
                     // enter
@@ -521,6 +520,7 @@ let renderTrees = {
                 }
 
                 switch(e.originalEvent.detail){
+                    // Одинарный клик
                     case 1:
                         pendingClick = setTimeout(() => {
                             this.closeAll();
