@@ -231,11 +231,8 @@ let renderTrees = {
 
                             let blockChanges = renderTrees.blockChanges;
 
-                            // Если фокус на блоке изменений, то при клике на другой элемент закрываем блок изменений
-                            // В противном случае скрываем подсписок у нажатого элемента
-                            if (blockChanges.focus){
-                                blockChanges.focus = false;
-                            } else {
+                            // Только если блок изменений закрыт, скрываем/открываем подсписок
+                            if (blockChanges.isNotOpen()){
                                 line.hideShowSublist();
                             }
 
@@ -289,7 +286,14 @@ let renderTrees = {
         saveButton: [],
         addButton: [],
         delButton: [],
-        focus: false,
+        
+        // Проверяет, открыт ли блок изменений. Если закрыт, то возвращает true и наоборот
+        isNotOpen () {
+            for (let elem of this.elem){
+                if (elem.is(":visible")){ return false;}
+            }
+            return true;
+        },
 
         // Пробегет по всему массиву, содержащему блоки изменений для каждого дерева и закрывает эти блоки
         closeAll () { for (let elem of this.elem){ elem.hide(); } },
@@ -336,7 +340,6 @@ let renderTrees = {
             // Действия над инпутом
             this.input[renderTrees.index].val(input.text);
             this.input[renderTrees.index].select();
-            this.focus = true;
             this.input[renderTrees.index].css({
                 'width': input.width,
                 'fontFamily' : input.fontFamily,
@@ -389,8 +392,6 @@ let renderTrees = {
             } else {
                 add();
             }
-
-
         },
 
         // Удалить выбранный пункт
@@ -497,7 +498,6 @@ let renderTrees = {
             this.elem[index - 1].on('click',(e)=>{
                 e.stopPropagation();
             });
-
 
             // Если esc блок изменений закрывается
             $(window).off('keyup.blockChange'); // Во избежание навешивания обработчика несколько раз
